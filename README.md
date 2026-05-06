@@ -1,31 +1,33 @@
 # Refactoring Katas
 
-A collection of **20 progressive refactoring katas** inspired by [Emily Bache's Tennis Refactoring Kata](https://github.com/emilybache/Tennis-Refactoring-Kata), covering all major code smells from [Martin Fowler's Refactoring Catalog](https://refactoring.com/catalog/).
+A collection of **20 progressive refactoring katas** inspired by [Emily Bache's Tennis Refactoring Kata](https://github.com/emilybache/Tennis-Refactoring-Kata).
+
+Each kata is a small, working legacy-code exercise. The tests pass at the start. Your job is to improve the internal design while preserving behavior, using the tests as a safety net.
 
 ## Kata List
 
-| # | Kata | Core Smell | Key Refactorings |
-|---|------|-----------|-----------------|
-| 1 | **Magic Receipt** | Magic numbers/strings | Replace Magic Literal |
-| 2 | **The Never-Ending Function** | Function doing 5+ things | Extract Function, Slide Statements |
-| 3 | **Copy-Paste Payroll** | 3+ near-identical blocks | Extract Function, Parameterize Function |
-| 4 | **Cryptic Calculator** | Single-letter names | Rename Variable/Function |
-| 5 | **The Zombie Code** | Dead code, unreachable branches | Remove Dead Code |
-| 6 | **Nested If Hell** | 4+ nested conditionals | Replace Nested Conditional with Guard Clauses |
-| 7 | **The Switch Factory** | Giant switch on type | Replace Conditional with Polymorphism |
-| 8 | **Jealous Function** | Obsessed with another class | Move Function, Hide Delegate |
-| 9 | **Stringly Typed** | Primitives for domain | Replace Primitive with Object |
-| 10 | **The Null Spiral** | Null checks everywhere | Introduce Special Case |
-| 11 | **Parameter Soup** | 6+ parameters | Introduce Parameter Object |
-| 12 | **God Object** | 15+ methods, 3+ concerns | Extract Class, Move Field |
-| 13 | **The Chatterbox** | Exposed internals | Encapsulate Collection |
-| 14 | **The Messenger** | Pure forwarding class | Remove Middle Man |
-| 15 | **Inheritance Abuse** | Subclass breaks LSP | Push Down Field/Method, Remove Subclass |
-| 16 | **Shotgun Surgery** | 1 change, 5+ files | Move Function/Field, Combine into Class |
-| 17 | **The Taxonomy Trap** | Parallel hierarchies | Replace Inheritance with Delegation |
-| 18 | **Big Bang Algorithm** | Opaque/complex algo | Substitute Algorithm, Split Loop |
-| 19 | **Tangled Web** | Hardcoded dependencies | Extract Interface, Dependency Injection |
-| 20 | **The Legacy Monolith** | **All smells combined** | Full pipeline |
+| # | Kata | Core Smell | Practice Focus |
+|---|------|-----------|----------------|
+| 1 | **Magic Receipt** | Magic numbers/strings | Naming hidden business rules |
+| 2 | **The Never-Ending Function** | Function doing 5+ things | Finding boundaries inside one workflow |
+| 3 | **Copy-Paste Payroll** | 3+ near-identical blocks | Reducing repetition safely |
+| 4 | **Cryptic Calculator** | Single-letter names | Making intent visible |
+| 5 | **The Zombie Code** | Dead code, unreachable branches | Removing noise without changing behavior |
+| 6 | **Nested If Hell** | 4+ nested conditionals | Flattening decision flow |
+| 7 | **The Switch Factory** | Giant switch on type | Organizing mode-specific rules |
+| 8 | **Jealous Function** | Obsessed with another class | Moving behavior toward the data it uses |
+| 9 | **Stringly Typed** | Primitives for domain | Making domain values explicit |
+| 10 | **The Null Spiral** | Null checks everywhere | Clarifying missing-data behavior |
+| 11 | **Parameter Soup** | 6+ parameters | Grouping related inputs |
+| 12 | **God Object** | 15+ methods, 3+ concerns | Separating responsibilities |
+| 13 | **The Chatterbox** | Exposed internals | Protecting object boundaries |
+| 14 | **The Messenger** | Pure forwarding class | Removing low-value indirection |
+| 15 | **Inheritance Abuse** | Subclass tree for small variations | Questioning hierarchy shape |
+| 16 | **Shotgun Surgery** | 1 change, 5+ files | Finding scattered rules |
+| 17 | **The Taxonomy Trap** | Parallel hierarchies | Avoiding class explosion |
+| 18 | **Big Bang Algorithm** | Opaque/complex algorithm | Separating calculation phases |
+| 19 | **Tangled Web** | Hardcoded dependencies | Untangling environment dependencies |
+| 20 | **The Legacy Monolith** | **All smells combined** | Refactoring in small safe steps |
 
 ## Languages
 
@@ -36,59 +38,75 @@ Each kata is available in:
 - **JavaScript** (Node 20.11.0) — built-in `node --test`
 - **C#** (.NET 8.0) — xUnit
 
+Tool versions are managed with [`mise`](https://mise.jdx.dev/). Each language directory contains its own `.tool-versions` file.
+
+## Requirements
+
+- `mise`
+- `make`
+- A shell that can run the language toolchain commands
+
+You do not need to install every language before starting. Install only the language for the kata you want to practice.
+
 ## Quick Start
 
-### 1. Install languages
-
-```bash
-mise install   # Uses .tool-versions in each language directory
-```
-
-### 2. Pick a kata
+### 1. Pick a kata
 
 ```bash
 cd ruby/01-magic-receipt
-# or
+```
+
+Or choose the same kata in another language:
+
+```bash
 cd python/07-switch-factory
-# or
 cd golang/12-god-object
 ```
 
-### 3. Run tests (they should all pass on the bad code)
+### 2. Install tools and dependencies
+
+```bash
+make install
+```
+
+`make install` runs `mise install` from the kata directory and then installs any language-specific dependencies, such as `pytest` for Python or NuGet packages for C#.
+
+### 3. Run tests
 
 ```bash
 make test
 ```
 
-### 4. Refactor the code in `src/`
+The tests should pass before you change anything.
+
+### 4. Refactor the code
 
 - Read `README.md` for the scenario
-- Read `HINTS.md` for smells to find and techniques to apply
+- Read `HINTS.md` only if you want small nudges about what to look for
 - **Keep all tests green** — they test behavior, not implementation
-- **Do not change tests or method signatures**
+- **Do not change tests or public behavior**
 
 ### 5. Validate your solution
 
 ```bash
-make verify      # Prints the validation prompt to paste into an LLM
-make doctor      # Check your tools are installed
+make verify
 ```
 
-Or use the built-in skill:
-```bash
-# Claude Code / OpenCode
-/validate-kata
+`make verify` points you to `VALIDATION_PROMPT.md`, which you can paste into an LLM for a refactoring review.
 
-# Codex CLI
-codex validate-kata
+You can also check the local setup at any point:
+
+```bash
+make doctor
 ```
 
 ## Philosophy
 
-- **No solutions included** — only starter code + tests + hints
-- **Tests are perfect** — behavior-based, implementation-agnostic
-- **Comments removed** from bad code — you must spot the smells yourself
-- **Progressive difficulty** — start with simple naming issues, end with full legacy monoliths
+- **No solutions included** — only starter code, tests, and small hints
+- **Tests are the contract** — behavior-based and fast to run
+- **Same kata across languages** — each kata number has the same domain and behavior in Ruby, Python, JavaScript, Go, and C#
+- **Inspired by Tennis Kata** — small working programs with awkward design, meant for behavior-preserving refactoring
+- **Progressive difficulty** — start with simple naming issues, end with a legacy monolith
 
 ## Project Structure
 
@@ -123,18 +141,40 @@ Every kata directory has a `Makefile` with:
 
 | Command | Purpose |
 |---------|---------|
-| `make install` | Install dependencies (if any) |
+| `make install` | Run `mise install` and install kata dependencies |
 | `make test` | Run the test suite |
-| `make doctor` | Check for missing tools (ruby, mise, etc.) |
-| `make verify` | Print the LLM validation prompt |
+| `make doctor` | Check for missing tools |
+| `make verify` | Point to the validation prompt |
+
+## Kata Structure Reports
+
+Use the root Tree-sitter structure tool when you want an AI agent to compare the same kata across languages.
+
+Install the reporting tool once from the repo root:
+
+```bash
+make install-tools
+```
+
+Print a Markdown report for one language and kata:
+
+```bash
+make kata-structure LANG=python KATA=07
+make kata-structure LANG=javascript KATA=07
+make kata-structure LANG=ruby KATA=07
+make kata-structure LANG=golang KATA=07
+make kata-structure LANG=csharp KATA=07
+```
+
+The report separates source and tests, then lists declarations, control-flow shape, literals, identifiers, test names, test count, estimated runtime cases, assertions, parse errors, and a compact Tree-sitter node profile. The tool reports facts only; use the Markdown outputs to judge parity across languages.
 
 ## Validation
 
-Each kata includes `VALIDATION_PROMPT.md` — a prompt you can paste into any LLM (Claude, ChatGPT, Gemini, Codex) to evaluate your refactored solution. It scores across:
+Each kata includes `VALIDATION_PROMPT.md` — a prompt you can paste into any LLM to evaluate your refactored solution. It scores across:
 
 - **Readability** (naming, formatting, clarity)
 - **Single Responsibility** (function/class size and cohesion)
-- **Design Patterns** (Fowler techniques applied correctly)
+- **Behavior Preservation** (same observable behavior)
 - **Test Preservation** (all original tests still pass)
 - **Smells Eliminated** (checklist from HINTS.md)
 - **Overall Score** (0-10)
