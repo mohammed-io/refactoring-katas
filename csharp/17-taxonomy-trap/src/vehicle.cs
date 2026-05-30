@@ -19,6 +19,8 @@ public class Car : Vehicle
     }
 
     public int daily_rate() => 40;
+
+    public int insurance_cost(int d) => d * 12;
 }
 
 public class Truck : Vehicle
@@ -28,6 +30,8 @@ public class Truck : Vehicle
     }
 
     public int daily_rate() => 80;
+
+    public int insurance_cost(int d) => d * 20;
 }
 
 public class ElectricCar : Car
@@ -37,6 +41,8 @@ public class ElectricCar : Car
     }
 
     public int fuel_cost(int d) => 0;
+
+    public int rental_total(int d, bool gps = false) => daily_rate() * d + fuel_cost(d) + insurance_cost(d) + (gps ? 8 * d : 0);
 }
 
 public class DieselCar : Car
@@ -46,6 +52,8 @@ public class DieselCar : Car
     }
 
     public int fuel_cost(int d) => d * 5;
+
+    public int rental_total(int d, bool gps = false) => daily_rate() * d + fuel_cost(d) + insurance_cost(d) + (gps ? 8 * d : 0);
 }
 
 public class ElectricTruck : Truck
@@ -55,6 +63,8 @@ public class ElectricTruck : Truck
     }
 
     public int fuel_cost(int d) => 0;
+
+    public int rental_total(int d, bool gps = false) => daily_rate() * d + fuel_cost(d) + insurance_cost(d) + (gps ? 8 * d : 0);
 }
 
 public class DieselTruck : Truck
@@ -64,4 +74,6 @@ public class DieselTruck : Truck
     }
 
     public int fuel_cost(int d) => d * 15;
+
+    public int rental_total(int d, bool gps = false) => daily_rate() * d + fuel_cost(d) + insurance_cost(d) + (gps ? 8 * d : 0);
 }

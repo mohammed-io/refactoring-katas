@@ -1,8 +1,8 @@
 ## Code Smells to Look For
 
-- [ ] Filesystem path, current date, and defaults are hardcoded
+- [ ] Filesystem path, environment variables, current date, and defaults are hardcoded
 - [ ] Error handling and config merging are tangled
-- [ ] Tests depend on external environment details
+- [ ] Config precedence is implicit inside one method
 
 ## Common Pitfalls
 

@@ -1,27 +1,26 @@
 public class Calculator
 {
-    public double[] normalize(double[] scores, double newMin, double newMax)
+    public double[] normalize(double[] a, double b, double c)
     {
-        var result = new List<double>();
-        var min = double.PositiveInfinity;
-        var max = double.NegativeInfinity;
+        var d = new List<double>();
+        var e = double.PositiveInfinity;
+        var f = double.NegativeInfinity;
 
-        // Find min and max of input scores
-        for (int i = 0; i < scores.Length; i++)
+        for (int g = 0; g < a.Length; g++)
         {
-            if (scores[i] < min) min = scores[i];
-            if (scores[i] > max) max = scores[i];
+            if (a[g] < e) e = a[g];
+            if (a[g] > f) f = a[g];
         }
 
-        var inputRange = max - min;
-        var outputRange = newMax - newMin;
+        var h = f - e;
+        var i = c - b;
 
-        for (int i = 0; i < scores.Length; i++)
+        for (int g = 0; g < a.Length; g++)
         {
-            var normalizedValue = newMin + ((scores[i] - min) / inputRange) * outputRange;
-            result.Add(Math.Round(normalizedValue, 2));
+            var k = b + ((a[g] - e) / h) * i;
+            d.Add(Math.Round(k, 2));
         }
 
-        return result.ToArray();
+        return d.ToArray();
     }
 }

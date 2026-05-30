@@ -24,6 +24,7 @@ test('skips inactive customers', () => {
   const sender = new CampaignSender();
   const result = sender.send_campaign([{ active: false, region: 'US' }], 'Hi');
   assert.strictEqual(result.sent, 0);
+  assert.strictEqual(result.skipped, 1);
 });
 
 test('handles mixed customers', () => {
@@ -35,6 +36,24 @@ test('handles mixed customers', () => {
     { active: false, region: 'US' }
   ], 'Hi');
   assert.strictEqual(result.sent, 2);
+  assert.strictEqual(result.skipped, 2);
+});
+
+test('skips unsubscribed customers', () => {
+  const sender = new CampaignSender();
+  const result = sender.send_campaign([{ active: true, region: 'US', unsubscribed: true }], 'Hi');
+  assert.strictEqual(result.sent, 0);
+  assert.strictEqual(result.skipped, 1);
+});
+
+test('dry run never sends but keeps skip count', () => {
+  const sender = new CampaignSender();
+  const result = sender.send_campaign([
+    { active: true, region: 'US' },
+    { active: false, region: 'US' }
+  ], '__dry_run__');
+  assert.strictEqual(result.sent, 0);
+  assert.strictEqual(result.skipped, 1);
 });
 
 test('returns message in result', () => {

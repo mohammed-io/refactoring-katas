@@ -31,3 +31,15 @@ def test_car_stores_brand():
 def test_truck_stores_model():
     v = Truck("Ford", "F-150", 2020)
     assert v.model == "F-150"
+
+def test_diesel_car_rental_total_combines_rate_fuel_insurance_and_gps():
+    v = DieselCar("VW", "Jetta", 2020)
+    assert v.rental_total(3, gps=True) == 195
+
+def test_electric_truck_rental_total_combines_truck_rate_and_insurance():
+    v = ElectricTruck("Rivian", "R1T", 2020)
+    assert v.rental_total(2, gps=False) == 200
+
+def test_diesel_truck_rental_total_includes_higher_fuel_cost():
+    v = DieselTruck("Ford", "F-250", 2020)
+    assert v.rental_total(2, gps=True) == 246

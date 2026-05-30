@@ -2,25 +2,25 @@ class Calculator:
     def __init__(self):
         pass
 
-    def normalize(self, scores, new_min, new_max):
-        normalized = []
-        current_min = float("inf")
-        current_max = float("-inf")
+    def normalize(self, a, b, c):
+        d = []
+        e = float("inf")
+        f = float("-inf")
 
-        for score in scores:
-            if score < current_min:
-                current_min = score
-            if score > current_max:
-                current_max = score
+        for g in a:
+            if g < e:
+                e = g
+            if g > f:
+                f = g
 
-        score_range = current_max - current_min
-        new_range = new_max - new_min
+        h = f - e
+        i = c - b
 
-        for score in scores:
+        for g in a:
             try:
-                normalized_score = new_min + ((score - current_min) / score_range) * new_range
+                k = b + ((g - e) / h) * i
             except ZeroDivisionError:
-                normalized_score = float("nan")
-            normalized.append(round(normalized_score, 2))
+                k = float("nan")
+            d.append(round(k, 2))
 
-        return normalized
+        return d

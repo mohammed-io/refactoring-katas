@@ -87,3 +87,43 @@ def test_includes_order_id():
         "customer": {"email": "a@b.com"}
     })
     assert result["orderId"] == 99
+
+def test_ignores_non_positive_item_prices_but_counts_positive_quantities():
+    system = LegacySystem()
+    result = system.process_everything({
+        "id": 10,
+        "items": [{"price": 20, "quantity": 2}, {"price": -100, "quantity": 1}],
+        "customer": {"email": "a@b.com"}
+    })
+    assert result["total"] == 42.8
+    assert result["shippingWeight"] == 3
+
+def test_applies_save10_coupon():
+    system = LegacySystem()
+    result = system.process_everything({
+        "id": 11,
+        "items": [{"price": 100, "quantity": 1}],
+        "coupon": "SAVE10",
+        "customer": {"email": "a@b.com"}
+    })
+    assert result["total"] == 96.3
+
+def test_tax_exempt_customer_pays_no_tax():
+    system = LegacySystem()
+    result = system.process_everything({
+        "id": 12,
+        "items": [{"price": 100, "quantity": 1}],
+        "customer": {"email": "a@b.com", "taxExempt": True}
+    })
+    assert result["total"] == 100
+    assert result["taxRate"] == 0
+
+def test_express_shipping_overrides_carrier():
+    system = LegacySystem()
+    result = system.process_everything({
+        "id": 13,
+        "items": [{"price": 10, "quantity": 1}],
+        "shipping": {"speed": "express"},
+        "customer": {"email": "a@b.com"}
+    })
+    assert result["carrier"] == "FedEx"

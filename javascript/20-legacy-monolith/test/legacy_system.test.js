@@ -99,3 +99,47 @@ test('includes order id', () => {
   });
   assert.strictEqual(result.orderId, 99);
 });
+
+test('ignores non-positive item prices but counts positive quantities', () => {
+  const system = new LegacySystem();
+  const result = system.process_everything({
+    id: 10,
+    items: [{ price: 20, quantity: 2 }, { price: -100, quantity: 1 }],
+    customer: { email: 'a@b.com' }
+  });
+  assert.strictEqual(result.total, 42.8);
+  assert.strictEqual(result.shippingWeight, 3);
+});
+
+test('applies SAVE10 coupon', () => {
+  const system = new LegacySystem();
+  const result = system.process_everything({
+    id: 11,
+    items: [{ price: 100, quantity: 1 }],
+    coupon: 'SAVE10',
+    customer: { email: 'a@b.com' }
+  });
+  assert.strictEqual(result.total, 96.3);
+});
+
+test('tax exempt customer pays no tax', () => {
+  const system = new LegacySystem();
+  const result = system.process_everything({
+    id: 12,
+    items: [{ price: 100, quantity: 1 }],
+    customer: { email: 'a@b.com', taxExempt: true }
+  });
+  assert.strictEqual(result.total, 100);
+  assert.strictEqual(result.taxRate, 0);
+});
+
+test('express shipping overrides carrier', () => {
+  const system = new LegacySystem();
+  const result = system.process_everything({
+    id: 13,
+    items: [{ price: 10, quantity: 1 }],
+    shipping: { speed: 'express' },
+    customer: { email: 'a@b.com' }
+  });
+  assert.strictEqual(result.carrier, 'FedEx');
+});

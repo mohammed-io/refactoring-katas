@@ -58,3 +58,9 @@ test('includes email confirmation', () => {
   assert.strictEqual(result.email.to, 'user@test.com');
   assert.strictEqual(result.email.subject, 'Order Confirmation');
 });
+
+test('quantity 100 is not out of stock', () => {
+  const processor = new OrderProcessor();
+  const result = processor.process_order({ items: [{ price: 1, quantity: 100 }], customer: { email: 'a@b.com' }, address: { zip: '12345' } });
+  assert.strictEqual(result.error, undefined);
+});

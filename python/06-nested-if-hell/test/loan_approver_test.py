@@ -58,3 +58,29 @@ def test_missing_weight():
     result = approver.can_deliver({"hazardous": False})
     assert result["allowed"] is False
     assert result["warning"] == "No weight specified"
+
+
+def test_weight_50_allowed():
+    approver = LoanApprover()
+    result = approver.can_deliver({"weight": 50, "hazardous": False, "weekend": False})
+    assert result["allowed"] is True
+    assert result["warning"] is None
+
+
+def test_temperature_40_allowed():
+    approver = LoanApprover()
+    result = approver.can_deliver({"weight": 10, "hazardous": False, "weekend": False, "temperatureRequired": 40})
+    assert result["allowed"] is True
+
+
+def test_temperature_minus_20_allowed():
+    approver = LoanApprover()
+    result = approver.can_deliver({"weight": 10, "hazardous": False, "weekend": False, "temperatureRequired": -20})
+    assert result["allowed"] is True
+
+
+def test_remote_weight_20_allowed():
+    approver = LoanApprover()
+    result = approver.can_deliver({"weight": 20, "hazardous": False, "weekend": False, "remoteArea": True})
+    assert result["allowed"] is True
+    assert result["warning"] == "Remote surcharge applies"

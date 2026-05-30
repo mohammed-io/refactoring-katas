@@ -95,4 +95,44 @@ class LegacySystemTest < Minitest::Test
     )
     assert_equal 99, result[:order_id]
   end
+
+  def test_ignores_non_positive_item_prices_but_counts_positive_quantities
+    result = @system.process_everything(
+      id: 10,
+      items: [{ price: 20, quantity: 2 }, { price: -100, quantity: 1 }],
+      customer: { email: 'a@b.com' }
+    )
+    assert_equal 42.8, result[:total]
+    assert_equal 3, result[:shipping_weight]
+  end
+
+  def test_applies_save10_coupon
+    result = @system.process_everything(
+      id: 11,
+      items: [{ price: 100, quantity: 1 }],
+      coupon: 'SAVE10',
+      customer: { email: 'a@b.com' }
+    )
+    assert_equal 96.3, result[:total]
+  end
+
+  def test_tax_exempt_customer_pays_no_tax
+    result = @system.process_everything(
+      id: 12,
+      items: [{ price: 100, quantity: 1 }],
+      customer: { email: 'a@b.com', tax_exempt: true }
+    )
+    assert_equal 100, result[:total]
+    assert_equal 0, result[:tax_rate]
+  end
+
+  def test_express_shipping_overrides_carrier
+    result = @system.process_everything(
+      id: 13,
+      items: [{ price: 10, quantity: 1 }],
+      shipping: { speed: 'express' },
+      customer: { email: 'a@b.com' }
+    )
+    assert_equal 'FedEx', result[:carrier]
+  end
 end

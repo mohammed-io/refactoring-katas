@@ -31,7 +31,7 @@ public class PayrollCalculator
             if (emp.Type == "fulltime")
             {
                 var baseGross = emp.Salary / 12;
-                gross = baseGross + (emp.Bonus > 0 ? emp.Bonus / 12 : 0);
+                gross = baseGross + (emp.Bonus != 0 ? emp.Bonus / 12 : 0);
                 deductions = baseGross * 0.25m;
                 net = gross - deductions;
             }

@@ -63,4 +63,9 @@ class OrderProcessorTest < Minitest::Test
     assert_equal 'user@test.com', result[:email][:to]
     assert_equal 'Order Confirmation', result[:email][:subject]
   end
+
+  def test_quantity_100_not_out_of_stock
+    result = @processor.process_order(base_order(price: 1, quantity: 100))
+    refute result.key?(:error)
+  end
 end

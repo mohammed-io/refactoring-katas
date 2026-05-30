@@ -3,6 +3,7 @@
 - [ ] Several layers only forward the same payload
 - [ ] Middle objects add no behavior
 - [ ] The call chain is longer than the work being done
+- [ ] Validation, defaulting, auditing, and delivery boundaries are unclear
 
 ## Common Pitfalls
 

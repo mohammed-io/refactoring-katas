@@ -1,8 +1,8 @@
 public class Package
 {
     public int? Weight;
-    public bool Hazardous;
-    public bool Weekend;
+    public bool? Hazardous;
+    public bool? Weekend;
     public int? TemperatureRequired;
     public bool RemoteArea;
 }
@@ -32,7 +32,7 @@ public class LoanApprover
             return new DeliveryResult { Allowed = false, Warning = "Weight exceeded" };
         }
 
-        if (pkg.Hazardous)
+        if (pkg.Hazardous != false)
         {
             return new DeliveryResult { Allowed = false, Warning = "Hazardous material" };
         }
@@ -45,7 +45,7 @@ public class LoanApprover
             }
         }
 
-        if (pkg.Weekend)
+        if (pkg.Weekend != false)
         {
             return new DeliveryResult { Allowed = false, Warning = "No weekend delivery" };
         }

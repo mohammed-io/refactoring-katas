@@ -28,7 +28,7 @@ public class FraudDetectorTest
     }
 
     [Fact]
-    public void ElevatedRiskForGambling()
+    public void GamblingMerchantIsMediumRisk()
     {
         var detector = new FraudDetector();
         var result = detector.detect(CreateTx(100, Now, merchant: "gambling"));
@@ -37,7 +37,7 @@ public class FraudDetectorTest
     }
 
     [Fact]
-    public void HighRiskForCrossBorder()
+    public void CrossBorderAloneIsLowRisk()
     {
         var detector = new FraudDetector();
         var result = detector.detect(CreateTx(1000, Now, country: "FR", cardCountry: "US"));
@@ -71,7 +71,7 @@ public class FraudDetectorTest
     }
 
     [Fact]
-    public void VolumeSpikesIncreaseRisk()
+    public void VolumeSpikesAloneStayLowRisk()
     {
         var detector = new FraudDetector();
         var history = new List<Tx>

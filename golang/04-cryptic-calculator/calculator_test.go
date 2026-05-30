@@ -74,3 +74,57 @@ func TestNormalizeHandlesSameMinAndMax(t *testing.T) {
 		t.Errorf("expected NaN at index 2, got %v", result[2])
 	}
 }
+
+func TestNormalizeHandlesReversedOutputRange(t *testing.T) {
+	calc := NewCalculator()
+	result := calc.normalize([]float64{10, 20, 30}, 100, 0)
+	expected := []float64{100, 50, 0}
+	if !slicesEqual(result, expected) {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNormalizeRoundsFractionalResults(t *testing.T) {
+	calc := NewCalculator()
+	result := calc.normalize([]float64{2, 3, 5}, 0, 100)
+	expected := []float64{0, 33.33, 100}
+	if !slicesEqual(result, expected) {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNormalizeEmptyInputReturnsEmptyResult(t *testing.T) {
+	calc := NewCalculator()
+	result := calc.normalize([]float64{}, 0, 100)
+	expected := []float64{}
+	if !slicesEqual(result, expected) {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNormalizePreservesInputOrderWithDuplicates(t *testing.T) {
+	calc := NewCalculator()
+	result := calc.normalize([]float64{30, 10, 30, 20}, 0, 100)
+	expected := []float64{100, 0, 100, 50}
+	if !slicesEqual(result, expected) {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNormalizeNormalizesDecimalOutputRange(t *testing.T) {
+	calc := NewCalculator()
+	result := calc.normalize([]float64{1.5, 2.5, 3.5}, -1, 1)
+	expected := []float64{-1, 0, 1}
+	if !slicesEqual(result, expected) {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNormalizeRoundsNegativeFractionalResults(t *testing.T) {
+	calc := NewCalculator()
+	result := calc.normalize([]float64{2, 5, 8}, -10, 10)
+	expected := []float64{-10, 0, 10}
+	if !slicesEqual(result, expected) {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}

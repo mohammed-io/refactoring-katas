@@ -1,41 +1,86 @@
 import assert from 'node:assert';
 import test from 'node:test';
 import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { ConfigLoader } from '../src/config_loader.js';
 
-test('returns empty object when file and fetch fail', () => {
-  const loader = new ConfigLoader();
-  const result = loader.load_config();
-  assert.ok(typeof result === 'object');
+function withEnv(values, fn) {
+  const oldEnv = { ...process.env };
+  Object.assign(process.env, values);
+  try {
+    fn();
+  } finally {
+    process.env = oldEnv;
+  }
+}
+
+test('returns defaults when file is missing', () => {
+  withEnv({ APP_CONFIG_PATH: path.join(os.tmpdir(), 'missing-config.json') }, () => {
+    const loader = new ConfigLoader();
+    const result = loader.load_config();
+    assert.strictEqual(result.retries, 3);
+    assert.strictEqual(result.theme, 'standard');
+    assert.strictEqual(result.discount, 0);
+  });
 });
 
 test('reads local config file when present', () => {
-  fs.writeFileSync('/tmp/config.json', JSON.stringify({ name: 'test' }));
-  const loader = new ConfigLoader();
-  const result = loader.load_config();
-  assert.strictEqual(result.name, 'test');
-  fs.unlinkSync('/tmp/config.json');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'config-loader-'));
+  const configPath = path.join(dir, 'config.json');
+  fs.writeFileSync(configPath, JSON.stringify({ name: 'test', retries: 5 }));
+  withEnv({ APP_CONFIG_PATH: configPath }, () => {
+    const loader = new ConfigLoader();
+    const result = loader.load_config();
+    assert.strictEqual(result.name, 'test');
+    assert.strictEqual(result.retries, 5);
+  });
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
-test('local overrides empty file', () => {
-  fs.writeFileSync('/tmp/config.json', JSON.stringify({ name: 'local' }));
-  const loader = new ConfigLoader();
-  const result = loader.load_config();
-  assert.strictEqual(result.name, 'local');
-  fs.unlinkSync('/tmp/config.json');
+test('environment overrides local config', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'config-loader-'));
+  const configPath = path.join(dir, 'config.json');
+  fs.writeFileSync(configPath, JSON.stringify({ theme: 'local', retries: 5 }));
+  withEnv({ APP_CONFIG_PATH: configPath, APP_THEME: 'env-theme', APP_RETRIES: '9' }, () => {
+    const loader = new ConfigLoader();
+    const result = loader.load_config();
+    assert.strictEqual(result.theme, 'env-theme');
+    assert.strictEqual(result.retries, 9);
+  });
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
 test('handles malformed json gracefully', () => {
-  fs.writeFileSync('/tmp/config.json', 'not json');
-  const loader = new ConfigLoader();
-  const result = loader.load_config();
-  assert.ok(typeof result === 'object');
-  fs.unlinkSync('/tmp/config.json');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'config-loader-'));
+  const configPath = path.join(dir, 'config.json');
+  fs.writeFileSync(configPath, 'not json');
+  withEnv({ APP_CONFIG_PATH: configPath }, () => {
+    const loader = new ConfigLoader();
+    const result = loader.load_config();
+    assert.strictEqual(result.theme, 'standard');
+  });
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
-test('includes seasonal keys in object', () => {
-  const loader = new ConfigLoader();
-  const result = loader.load_config();
-  assert.ok('theme' in result || !result.theme);
-  assert.ok('discount' in result || !result.discount);
+test('winter seasonal config has highest precedence', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'config-loader-'));
+  const configPath = path.join(dir, 'config.json');
+  fs.writeFileSync(configPath, JSON.stringify({ theme: 'local', discount: 0.25 }));
+  withEnv({ APP_CONFIG_PATH: configPath, APP_THEME: 'env-theme', APP_CURRENT_MONTH: '12' }, () => {
+    const loader = new ConfigLoader();
+    const result = loader.load_config();
+    assert.strictEqual(result.theme, 'winter');
+    assert.strictEqual(result.discount, 0.1);
+  });
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('summer seasonal config is deterministic', () => {
+  withEnv({ APP_CONFIG_PATH: path.join(os.tmpdir(), 'missing-config.json'), APP_CURRENT_MONTH: '7' }, () => {
+    const loader = new ConfigLoader();
+    const result = loader.load_config();
+    assert.strictEqual(result.theme, 'summer');
+    assert.strictEqual(result.discount, 0.05);
+  });
 });

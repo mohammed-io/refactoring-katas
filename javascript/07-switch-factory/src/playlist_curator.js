@@ -33,7 +33,6 @@ class PlaylistCurator {
             result.push(tracks[i]);
           }
         }
-        result.sort((a, b) => b.energy - a.energy);
         if (result.length > 25) {
           result = result.slice(0, 25);
         }
@@ -44,7 +43,6 @@ class PlaylistCurator {
             result.push(tracks[i]);
           }
         }
-        result.sort((a, b) => a.tempo - b.tempo);
         if (result.length > 30) {
           result = result.slice(0, 30);
         }
@@ -55,7 +53,6 @@ class PlaylistCurator {
             result.push(tracks[i]);
           }
         }
-        result.sort((a, b) => b.danceability - a.danceability);
         if (result.length > 20) {
           result = result.slice(0, 20);
         }

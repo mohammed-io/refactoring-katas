@@ -57,3 +57,24 @@ func TestVehicleStoresModel(t *testing.T) {
 		t.Errorf("Vehicle.Model = %q, want 'F-150'", v.Model)
 	}
 }
+
+func TestVehicleDieselCarRentalTotalCombinesRateFuelInsuranceAndGPS(t *testing.T) {
+	v := NewVehicle("VW", "Jetta", "car", "diesel", 2020)
+	if got := v.rental_total(3, true); got != 195 {
+		t.Errorf("Vehicle.rental_total() = %v, want 195", got)
+	}
+}
+
+func TestVehicleElectricTruckRentalTotalCombinesTruckRateAndInsurance(t *testing.T) {
+	v := NewVehicle("Rivian", "R1T", "truck", "electric", 2020)
+	if got := v.rental_total(2, false); got != 200 {
+		t.Errorf("Vehicle.rental_total() = %v, want 200", got)
+	}
+}
+
+func TestVehicleDieselTruckRentalTotalIncludesHigherFuelCost(t *testing.T) {
+	v := NewVehicle("Ford", "F-250", "truck", "diesel", 2020)
+	if got := v.rental_total(2, true); got != 246 {
+		t.Errorf("Vehicle.rental_total() = %v, want 246", got)
+	}
+}

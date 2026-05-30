@@ -66,4 +66,26 @@ class LoanApproverTest < Minitest::Test
     assert_equal false, result[:allowed]
     assert_equal 'No weight specified', result[:warning]
   end
+
+  def test_weight_50_allowed_at_boundary
+    result = @approver.can_deliver(weight: 50, hazardous: false, weekend: false)
+    assert_equal true, result[:allowed]
+    assert_nil result[:warning]
+  end
+
+  def test_temperature_40_allowed_at_boundary
+    result = @approver.can_deliver(weight: 10, hazardous: false, weekend: false, temperature_required: 40)
+    assert_equal true, result[:allowed]
+  end
+
+  def test_temperature_minus_20_allowed_at_boundary
+    result = @approver.can_deliver(weight: 10, hazardous: false, weekend: false, temperature_required: -20)
+    assert_equal true, result[:allowed]
+  end
+
+  def test_remote_weight_20_allowed_at_boundary
+    result = @approver.can_deliver(weight: 20, hazardous: false, weekend: false, remote_area: true)
+    assert_equal true, result[:allowed]
+    assert_equal 'Remote surcharge applies', result[:warning]
+  end
 end

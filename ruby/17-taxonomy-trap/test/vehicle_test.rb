@@ -43,4 +43,19 @@ class VehicleTest < Minitest::Test
     v = Truck.new('Ford', 'F-150', 2020)
     assert_equal 'F-150', v.model
   end
+
+  def test_diesel_car_rental_total_combines_rate_fuel_insurance_and_gps
+    v = DieselCar.new('VW', 'Jetta', 2020)
+    assert_equal 195, v.rental_total(3, true)
+  end
+
+  def test_electric_truck_rental_total_combines_truck_rate_and_insurance
+    v = ElectricTruck.new('Rivian', 'R1T', 2020)
+    assert_equal 200, v.rental_total(2, false)
+  end
+
+  def test_diesel_truck_rental_total_includes_higher_fuel_cost
+    v = DieselTruck.new('Ford', 'F-250', 2020)
+    assert_equal 246, v.rental_total(2, true)
+  end
 end

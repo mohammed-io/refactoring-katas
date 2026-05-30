@@ -15,14 +15,14 @@ def test_medium_risk_for_large_amount():
     assert result["rating"] == "medium"
     assert result["level"] == 2
 
-def test_elevated_risk_for_gambling():
+def test_gambling_merchant_is_medium_risk():
     detector = FraudDetector()
     now = int(time.time() * 1000)
     result = detector.detect({"amount": 100, "timestamp": now, "history": [], "merchant": "gambling", "country": "US", "cardCountry": "US"})
     assert result["rating"] == "medium"
     assert result["level"] == 2
 
-def test_high_risk_for_cross_border():
+def test_cross_border_alone_is_low_risk():
     detector = FraudDetector()
     now = int(time.time() * 1000)
     result = detector.detect({"amount": 1000, "timestamp": now, "history": [], "merchant": "grocery", "country": "FR", "cardCountry": "US"})
@@ -43,7 +43,7 @@ def test_velocity_increases_risk():
     result = detector.detect({"amount": 50, "timestamp": now, "history": hist, "merchant": "grocery", "country": "US", "cardCountry": "US"})
     assert result["level"] == 2
 
-def test_volume_spikes_increase_risk():
+def test_volume_spikes_alone_stay_low_risk():
     detector = FraudDetector()
     now = int(time.time() * 1000)
     hist = [{"amount": 200, "timestamp": now - i * 10000} for i in range(1, 4)]

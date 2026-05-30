@@ -42,3 +42,40 @@ class InventoryItem:
 
     def set_quantity(self, v):
         self.quantity = v
+
+    def reserve(self, units):
+        if units <= 0:
+            return {"status": "rejected", "reason": "invalid_quantity", "remaining": self.quantity}
+        if units > self.quantity:
+            return {"status": "backorder", "reserved": 0, "remaining": self.quantity}
+
+        self.quantity -= units
+        return {
+            "status": "reserved",
+            "reserved": units,
+            "remaining": self.quantity,
+            "sku": f"{self.id}-{self.batch_number}",
+        }
+
+    def receive_stock(self, units):
+        if units <= 0:
+            return self.quantity
+
+        self.quantity += units
+        return self.quantity
+
+    def public_snapshot(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "batch_number": self.batch_number,
+            "quantity": self.quantity,
+            "stock_status": self.stock_status(),
+        }
+
+    def stock_status(self):
+        if self.quantity == 0:
+            return "out"
+        if self.quantity < 5:
+            return "low"
+        return "available"

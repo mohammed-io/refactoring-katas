@@ -23,3 +23,8 @@ def test_vip_extra_discount():
 def test_empty_items():
     receipt = Receipt()
     assert receipt.calculate_total([]) == 0
+
+
+def test_exactly_50_no_bonus():
+    receipt = Receipt()
+    assert receipt.calculate_total([50]) == 54.0

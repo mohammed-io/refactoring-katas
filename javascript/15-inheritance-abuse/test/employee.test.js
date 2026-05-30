@@ -36,3 +36,18 @@ test('manager respects cap from senior manager', () => {
   const mgr = new Manager('Eve', 300000);
   assert.strictEqual(mgr.calculate_bonus(), 15000);
 });
+
+test('employee total reward adds high performance and tenure', () => {
+  const emp = new Employee('Alice', 50000);
+  assert.strictEqual(emp.calculate_total_reward('high', 5), 2000);
+});
+
+test('senior manager total reward uses capped bonus and tenure rule', () => {
+  const sm = new SeniorManager('Carol', 300000);
+  assert.strictEqual(sm.calculate_total_reward('normal', 7), 11500);
+});
+
+test('director total reward uses director performance rule', () => {
+  const dir = new Director('Dana', 200000);
+  assert.strictEqual(dir.calculate_total_reward('high', 3), 16000);
+});

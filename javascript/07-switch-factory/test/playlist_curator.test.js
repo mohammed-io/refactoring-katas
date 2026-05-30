@@ -63,6 +63,27 @@ test('defaults to first 10 for unknown mood', () => {
   assert.strictEqual(result.length, 10);
 });
 
+test('caps workout playlist at 25', () => {
+  const curator = new PlaylistCurator();
+  const tracks = Array(30).fill(null).map((_, i) => ({ title: String(i), tempo: 140, energy: 8 }));
+  const result = curator.create_playlist('workout', tracks);
+  assert.strictEqual(result.length, 25);
+});
+
+test('caps focus playlist at 30', () => {
+  const curator = new PlaylistCurator();
+  const tracks = Array(35).fill(null).map((_, i) => ({ title: String(i), instrumental: true }));
+  const result = curator.create_playlist('focus', tracks);
+  assert.strictEqual(result.length, 30);
+});
+
+test('caps party playlist at 20', () => {
+  const curator = new PlaylistCurator();
+  const tracks = Array(25).fill(null).map((_, i) => ({ title: String(i), tempo: 120, danceability: 7 }));
+  const result = curator.create_playlist('party', tracks);
+  assert.strictEqual(result.length, 20);
+});
+
 test('sorts happy by descending tempo', () => {
   const curator = new PlaylistCurator();
   const tracks = [{ title: 'A', tempo: 130 }, { title: 'B', tempo: 150 }];

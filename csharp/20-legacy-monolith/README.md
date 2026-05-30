@@ -6,7 +6,7 @@ This kata is about a e-commerce order monolith. The implementation works and the
 
 ## Component Usage
 
-The component validates, prices, discounts, taxes, pays, ships, notifies, logs, and reads config in one place. Treat the tests as the contract while you improve the internal design.
+The component validates, prices, discounts, taxes, pays, ships, emails, logs, and calculates loyalty points in one place. Treat the tests as the contract while you improve the internal design.
 
 ## How to Run
 

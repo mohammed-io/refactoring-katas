@@ -1,8 +1,9 @@
 ## Code Smells to Look For
 
 - [ ] Many previous smells appear in one workflow
-- [ ] Pricing, payment, shipping, email, logging, and config are coupled
+- [ ] Pricing, payment, shipping, email, logging, tax, and loyalty are coupled
 - [ ] Small rule changes require reading the whole function
+- [ ] Temporary names make it hard to see which rule changed the total
 
 ## Common Pitfalls
 

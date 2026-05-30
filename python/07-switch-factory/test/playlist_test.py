@@ -59,6 +59,24 @@ def test_defaults_to_first_10_for_unknown_mood():
     assert len(curator.create_playlist("mysterious", tracks)) == 10
 
 
+def test_caps_workout_playlist_at_25():
+    curator = PlaylistCurator()
+    tracks = [{"title": str(i), "tempo": 140, "energy": 8} for i in range(30)]
+    assert len(curator.create_playlist("workout", tracks)) == 25
+
+
+def test_caps_focus_playlist_at_30():
+    curator = PlaylistCurator()
+    tracks = [{"title": str(i), "instrumental": True} for i in range(35)]
+    assert len(curator.create_playlist("focus", tracks)) == 30
+
+
+def test_caps_party_playlist_at_20():
+    curator = PlaylistCurator()
+    tracks = [{"title": str(i), "tempo": 120, "danceability": 7} for i in range(25)]
+    assert len(curator.create_playlist("party", tracks)) == 20
+
+
 def test_sorts_happy_by_descending_tempo():
     curator = PlaylistCurator()
     tracks = [{"title": "A", "tempo": 130}, {"title": "B", "tempo": 150}]

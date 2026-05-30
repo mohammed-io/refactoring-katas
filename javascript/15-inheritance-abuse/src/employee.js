@@ -7,11 +7,25 @@ class Employee {
   calculate_bonus() {
     return this.salary * 0.02;
   }
+
+  calculate_total_reward(performance, years) {
+    let x = this.calculate_bonus();
+    if (performance === 'high') x += this.salary * 0.01;
+    if (years >= 5) x += 500;
+    return x;
+  }
 }
 
 class Manager extends Employee {
   calculate_bonus() {
     return this.salary * 0.05;
+  }
+
+  calculate_total_reward(performance, years) {
+    let x = this.calculate_bonus();
+    if (performance === 'high') x += this.salary * 0.02;
+    if (years >= 5) x += 1000;
+    return x;
   }
 }
 
@@ -23,6 +37,13 @@ class SeniorManager extends Manager {
     }
     return base;
   }
+
+  calculate_total_reward(performance, years) {
+    let x = this.calculate_bonus();
+    if (performance === 'high') x += this.salary * 0.02;
+    if (years >= 5) x += 1500;
+    return x;
+  }
 }
 
 class Director extends SeniorManager {
@@ -32,6 +53,13 @@ class Director extends SeniorManager {
       base = 20000;
     }
     return base;
+  }
+
+  calculate_total_reward(performance, years) {
+    let x = this.calculate_bonus();
+    if (performance === 'high') x += this.salary * 0.03;
+    if (years >= 5) x += 2500;
+    return x;
   }
 }
 

@@ -31,3 +31,8 @@ test('returns 0 for empty items', () => {
   const receipt = new Receipt();
   assert.strictEqual(receipt.calculate_total([]), 0);
 });
+
+test('exactly 50 gets no bonus discount', () => {
+  const receipt = new Receipt();
+  assert.strictEqual(receipt.calculate_total([50]), 54);
+});

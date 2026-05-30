@@ -15,6 +15,13 @@ class LegacySystem {
       if (order.items[i].price > 0) {
         x += order.items[i].price * order.items[i].quantity;
       }
+      if (order.items[i].quantity > 0) {
+        y += order.items[i].quantity;
+      }
+    }
+
+    if (x <= 0) {
+      return { error: 'Invalid total' };
     }
 
     let d = 0;
@@ -28,7 +35,18 @@ class LegacySystem {
       d += 10;
     }
 
-    let t = (x - d) * 0.07;
+    if (order.coupon === 'SAVE10') {
+      d += x * 0.1;
+    }
+
+    let taxRate = 0.07;
+    if (order.customer && order.customer.country === 'EU') {
+      taxRate = 0.2;
+    }
+    if (order.customer && order.customer.taxExempt) {
+      taxRate = 0;
+    }
+    let t = (x - d) * taxRate;
     let total = x - d + t;
 
     let payment = { status: 'approved' };
@@ -40,6 +58,10 @@ class LegacySystem {
     if (total > 50) {
       ship.carrier = 'UPS';
     }
+    if (order.shipping && order.shipping.speed === 'express') {
+      ship.carrier = 'FedEx';
+    }
+    ship.weight = y;
 
     let email = {
       to: order.customer ? order.customer.email : '',
@@ -61,13 +83,18 @@ class LegacySystem {
       total = total - 5;
     }
 
+    let loyalty = { points: Math.floor(total / 10) };
+
     return {
       orderId: order.id,
       total: Math.round(total * 100) / 100,
       paymentStatus: payment.status,
       carrier: ship.carrier,
       email: email,
-      log: log
+      log: log,
+      loyaltyPoints: loyalty.points,
+      taxRate: taxRate,
+      shippingWeight: ship.weight
     };
   }
 }

@@ -19,6 +19,7 @@ def test_inactive_customer():
     sender = CampaignSender()
     result = sender.send_campaign([{"active": False, "region": "US"}], "Hi")
     assert result["sent"] == 0
+    assert result["skipped"] == 1
 
 def test_mixed_customers():
     sender = CampaignSender()
@@ -30,6 +31,22 @@ def test_mixed_customers():
     ]
     result = sender.send_campaign(customers, "Hi")
     assert result["sent"] == 2
+    assert result["skipped"] == 2
+
+def test_unsubscribed_customer():
+    sender = CampaignSender()
+    result = sender.send_campaign([{"active": True, "region": "US", "unsubscribed": True}], "Hi")
+    assert result["sent"] == 0
+    assert result["skipped"] == 1
+
+def test_dry_run_never_sends_but_keeps_skip_count():
+    sender = CampaignSender()
+    result = sender.send_campaign([
+        {"active": True, "region": "US"},
+        {"active": False, "region": "US"}
+    ], "__dry_run__")
+    assert result["sent"] == 0
+    assert result["skipped"] == 1
 
 def test_message_in_result():
     sender = CampaignSender()

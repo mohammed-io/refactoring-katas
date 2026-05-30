@@ -119,3 +119,47 @@ func TestCanDeliverRejectsMissingWeight(t *testing.T) {
 		t.Errorf("expected warning 'No weight specified', got %q", result.Warning)
 	}
 }
+
+func TestCanDeliverWeight50AllowedAtBoundary(t *testing.T) {
+	la := NewLoanApprover()
+	pkg := &Package{Weight: 50, HasWeight: true, Hazardous: false, Weekend: false}
+	result := la.can_deliver(pkg)
+	if !result.Allowed {
+		t.Errorf("expected allowed true for weight 50, got false")
+	}
+	if result.Warning != "" {
+		t.Errorf("expected no warning, got %q", result.Warning)
+	}
+}
+
+func TestCanDeliverTemperature40AllowedAtBoundary(t *testing.T) {
+	la := NewLoanApprover()
+	temp40 := 40
+	pkg := &Package{Weight: 10, HasWeight: true, Hazardous: false, Weekend: false, TemperatureRequired: &temp40}
+	result := la.can_deliver(pkg)
+	if !result.Allowed {
+		t.Errorf("expected allowed true for temp 40, got false")
+	}
+}
+
+func TestCanDeliverTemperatureMinus20AllowedAtBoundary(t *testing.T) {
+	la := NewLoanApprover()
+	tempMinus20 := -20
+	pkg := &Package{Weight: 10, HasWeight: true, Hazardous: false, Weekend: false, TemperatureRequired: &tempMinus20}
+	result := la.can_deliver(pkg)
+	if !result.Allowed {
+		t.Errorf("expected allowed true for temp -20, got false")
+	}
+}
+
+func TestCanDeliverRemoteWeight20AllowedAtBoundary(t *testing.T) {
+	la := NewLoanApprover()
+	pkg := &Package{Weight: 20, HasWeight: true, Hazardous: false, Weekend: false, RemoteArea: true}
+	result := la.can_deliver(pkg)
+	if !result.Allowed {
+		t.Errorf("expected allowed true for remote weight 20, got false")
+	}
+	if result.Warning != "Remote surcharge applies" {
+		t.Errorf("expected warning 'Remote surcharge applies', got %q", result.Warning)
+	}
+}

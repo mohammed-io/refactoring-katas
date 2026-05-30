@@ -85,4 +85,12 @@ public class OrderProcessorTest
         Assert.Equal("user@test.com", result.EmailTo);
         Assert.Equal("Order Confirmation", result.EmailSubject);
     }
+
+    [Fact]
+    public void Quantity100NotOutOfStock()
+    {
+        var processor = new OrderProcessor();
+        var result = processor.process_order(CreateOrder(price: 1, quantity: 100));
+        Assert.Null(result.Error);
+    }
 }

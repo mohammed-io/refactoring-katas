@@ -26,6 +26,7 @@ class CampaignSenderTest < Minitest::Test
   def test_skips_inactive_customers
     result = @sender.send_campaign([{ active: false, region: 'US' }], 'Hi')
     assert_equal 0, result[:sent]
+    assert_equal 1, result[:skipped]
   end
 
   def test_handles_mixed_customers
@@ -36,6 +37,22 @@ class CampaignSenderTest < Minitest::Test
       { active: false, region: 'US' }
     ], 'Hi')
     assert_equal 2, result[:sent]
+    assert_equal 2, result[:skipped]
+  end
+
+  def test_skips_unsubscribed_customers
+    result = @sender.send_campaign([{ active: true, region: 'US', unsubscribed: true }], 'Hi')
+    assert_equal 0, result[:sent]
+    assert_equal 1, result[:skipped]
+  end
+
+  def test_dry_run_never_sends_but_keeps_skip_count
+    result = @sender.send_campaign([
+      { active: true, region: 'US' },
+      { active: false, region: 'US' }
+    ], '__dry_run__')
+    assert_equal 0, result[:sent]
+    assert_equal 1, result[:skipped]
   end
 
   def test_returns_message_in_result

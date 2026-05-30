@@ -31,4 +31,8 @@ class ReceiptTest < Minitest::Test
   def test_empty_items
     assert_equal 0, @receipt.calculate_total([])
   end
+
+  def test_exactly_50_no_bonus
+    assert_equal 54.0, @receipt.calculate_total([50])
+  end
 end

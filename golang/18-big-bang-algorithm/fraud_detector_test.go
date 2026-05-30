@@ -29,7 +29,7 @@ func TestDetectMediumRiskForLargeAmount(t *testing.T) {
 	}
 }
 
-func TestDetectElevatedRiskForGambling(t *testing.T) {
+func TestDetectGamblingMerchantIsMediumRisk(t *testing.T) {
 	fd := NewFraudDetector()
 	now := time.Now().UnixMilli()
 	result := fd.detect(Tx{Amount: 100, Timestamp: now, History: nil, Merchant: "gambling", Country: "US", CardCountry: "US"})
@@ -41,7 +41,7 @@ func TestDetectElevatedRiskForGambling(t *testing.T) {
 	}
 }
 
-func TestDetectHighRiskForCrossBorder(t *testing.T) {
+func TestDetectCrossBorderAloneIsLowRisk(t *testing.T) {
 	fd := NewFraudDetector()
 	now := time.Now().UnixMilli()
 	result := fd.detect(Tx{Amount: 1000, Timestamp: now, History: nil, Merchant: "grocery", Country: "FR", CardCountry: "US"})
@@ -77,7 +77,7 @@ func TestDetectVelocityIncreasesRisk(t *testing.T) {
 	}
 }
 
-func TestDetectVolumeSpikesIncreaseRisk(t *testing.T) {
+func TestDetectVolumeSpikesAloneStayLowRisk(t *testing.T) {
 	fd := NewFraudDetector()
 	now := time.Now().UnixMilli()
 	history := []Tx{

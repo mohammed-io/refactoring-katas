@@ -6,7 +6,7 @@ This kata is about a marketing campaign sender. The implementation works and the
 
 ## Component Usage
 
-The component counts customers eligible for a campaign and returns message metadata. Treat the tests as the contract while you improve the internal design.
+The component counts sent and skipped customers for a campaign and returns message metadata. Treat the tests as the contract while you improve the internal design.
 
 ## How to Run
 

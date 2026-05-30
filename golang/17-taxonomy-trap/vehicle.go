@@ -19,6 +19,13 @@ func (v *Vehicle) daily_rate() int {
 	return 40
 }
 
+func (v *Vehicle) insurance_cost(days int) int {
+	if v.Type == "truck" {
+		return days * 20
+	}
+	return days * 12
+}
+
 func (v *Vehicle) fuel_cost(days int) int {
 	if v.Fuel == "electric" {
 		return 0
@@ -27,4 +34,12 @@ func (v *Vehicle) fuel_cost(days int) int {
 		return days * 15
 	}
 	return days * 5
+}
+
+func (v *Vehicle) rental_total(days int, gps bool) int {
+	x := v.daily_rate()*days + v.fuel_cost(days) + v.insurance_cost(days)
+	if gps {
+		x += 8 * days
+	}
+	return x
 }

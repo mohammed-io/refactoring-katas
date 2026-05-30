@@ -55,6 +55,47 @@ class InventoryItem {
   set_quantity(val) {
     this.quantity = val;
   }
+
+  reserve(units) {
+    if (units <= 0) {
+      return { status: 'rejected', reason: 'invalid_quantity', remaining: this.quantity };
+    }
+    if (units > this.quantity) {
+      return { status: 'backorder', reserved: 0, remaining: this.quantity };
+    }
+
+    this.quantity -= units;
+    return { status: 'reserved', reserved: units, remaining: this.quantity, sku: `${this.id}-${this.batchNumber}` };
+  }
+
+  receive_stock(units) {
+    if (units <= 0) {
+      return this.quantity;
+    }
+
+    this.quantity += units;
+    return this.quantity;
+  }
+
+  public_snapshot() {
+    return {
+      id: this.id,
+      name: this.name,
+      batch_number: this.batchNumber,
+      quantity: this.quantity,
+      stock_status: this.stock_status(),
+    };
+  }
+
+  stock_status() {
+    if (this.quantity === 0) {
+      return 'out';
+    }
+    if (this.quantity < 5) {
+      return 'low';
+    }
+    return 'available';
+  }
 }
 
 export { InventoryItem };

@@ -102,6 +102,39 @@ public class PlaylistCuratorTest
     }
 
     [Fact]
+    public void CapsWorkoutPlaylistAt25()
+    {
+        var curator = new PlaylistCurator();
+        var tracks = Enumerable.Range(0, 30)
+                              .Select(i => new Track { Title = i.ToString(), Tempo = 140, Energy = 8 })
+                              .ToList();
+        var result = curator.create_playlist("workout", tracks);
+        Assert.Equal(25, result.Count);
+    }
+
+    [Fact]
+    public void CapsFocusPlaylistAt30()
+    {
+        var curator = new PlaylistCurator();
+        var tracks = Enumerable.Range(0, 35)
+                              .Select(i => new Track { Title = i.ToString(), Instrumental = true })
+                              .ToList();
+        var result = curator.create_playlist("focus", tracks);
+        Assert.Equal(30, result.Count);
+    }
+
+    [Fact]
+    public void CapsPartyPlaylistAt20()
+    {
+        var curator = new PlaylistCurator();
+        var tracks = Enumerable.Range(0, 25)
+                              .Select(i => new Track { Title = i.ToString(), Tempo = 120, Danceability = 7 })
+                              .ToList();
+        var result = curator.create_playlist("party", tracks);
+        Assert.Equal(20, result.Count);
+    }
+
+    [Fact]
     public void SortsHappyByDescendingTempo()
     {
         var curator = new PlaylistCurator();

@@ -101,4 +101,48 @@ public class LegacySystemTest
             new MonoCustomer("", "a@b.com")));
         Assert.Equal(99, result.OrderId);
     }
+
+    [Fact]
+    public void IgnoresNonPositiveItemPricesButCountsPositiveQuantities()
+    {
+        var system = new LegacySystem();
+        var result = system.process_everything(new MonoOrder(10,
+            new List<MonoItem> { new MonoItem(20, 2), new MonoItem(-100, 1) },
+            new MonoCustomer("", "a@b.com")));
+        Assert.Equal(42.8m, result.Total);
+        Assert.Equal(3, result.ShippingWeight);
+    }
+
+    [Fact]
+    public void AppliesSave10Coupon()
+    {
+        var system = new LegacySystem();
+        var result = system.process_everything(new MonoOrder(11,
+            new List<MonoItem> { new MonoItem(100, 1) },
+            new MonoCustomer("", "a@b.com"),
+            "SAVE10"));
+        Assert.Equal(96.3m, result.Total);
+    }
+
+    [Fact]
+    public void TaxExemptCustomerPaysNoTax()
+    {
+        var system = new LegacySystem();
+        var result = system.process_everything(new MonoOrder(12,
+            new List<MonoItem> { new MonoItem(100, 1) },
+            new MonoCustomer("", "a@b.com", TaxExempt: true)));
+        Assert.Equal(100m, result.Total);
+        Assert.Equal(0m, result.TaxRate);
+    }
+
+    [Fact]
+    public void ExpressShippingOverridesCarrier()
+    {
+        var system = new LegacySystem();
+        var result = system.process_everything(new MonoOrder(13,
+            new List<MonoItem> { new MonoItem(10, 1) },
+            new MonoCustomer("", "a@b.com"),
+            Shipping: new MonoShipping("express")));
+        Assert.Equal("FedEx", result.Carrier);
+    }
 }

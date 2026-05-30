@@ -23,21 +23,18 @@ class PlaylistCurator:
             for track in tracks:
                 if track.get("tempo", 0) > 130 and track.get("energy", 0) > 7:
                     result.append(track)
-            result.sort(key=lambda x: x.get("energy", 0), reverse=True)
             result = result[:25]
 
         elif mood == "focus":
             for track in tracks:
                 if track.get("instrumental") is True:
                     result.append(track)
-            result.sort(key=lambda x: x.get("tempo", 0))
             result = result[:30]
 
         elif mood == "party":
             for track in tracks:
                 if track.get("tempo", 0) > 110 and track.get("danceability", 0) > 6:
                     result.append(track)
-            result.sort(key=lambda x: x.get("danceability", 0), reverse=True)
             result = result[:20]
 
         else:

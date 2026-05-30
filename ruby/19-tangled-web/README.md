@@ -6,7 +6,7 @@ This kata is about a configuration loader. The implementation works and the test
 
 ## Component Usage
 
-The component loads local config and seasonal defaults from hardcoded environment dependencies. Treat the tests as the contract while you improve the internal design.
+The component loads defaults, local config, environment overrides, and seasonal rules through hardcoded environment dependencies. Treat the tests as the contract while you improve the internal design.
 
 ## How to Run
 

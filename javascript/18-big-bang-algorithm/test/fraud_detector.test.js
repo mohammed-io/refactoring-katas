@@ -16,14 +16,14 @@ test('medium risk for large amount', () => {
   assert.strictEqual(result.level, 2);
 });
 
-test('elevated risk for gambling', () => {
+test('gambling merchant is medium risk', () => {
   const detector = new FraudDetector();
   const result = detector.detect({ amount: 100, timestamp: Date.now(), history: [], merchant: 'gambling', country: 'US', cardCountry: 'US' });
   assert.strictEqual(result.rating, 'medium');
   assert.strictEqual(result.level, 2);
 });
 
-test('high risk for cross-border', () => {
+test('cross-border alone is low risk', () => {
   const detector = new FraudDetector();
   const result = detector.detect({ amount: 1000, timestamp: Date.now(), history: [], merchant: 'grocery', country: 'FR', cardCountry: 'US' });
   assert.strictEqual(result.rating, 'low');
@@ -50,7 +50,7 @@ test('velocity increases risk', () => {
   assert.strictEqual(result.level, 2);
 });
 
-test('volume spikes increase risk', () => {
+test('volume spikes alone stay low risk', () => {
   const now = Date.now();
   const detector = new FraudDetector();
   const result = detector.detect({ amount: 50, timestamp: now, history: [

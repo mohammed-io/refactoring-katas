@@ -3,14 +3,17 @@ package kata
 import "strings"
 
 type TicketItem struct {
-	Name string
-	Qty  int
+	Name      string
+	Qty       int
+	Modifiers []string
+	Allergy   string
 }
 type Order struct {
 	Items    []TicketItem
-	Customer string
-	Table    int
+	Customer map[string]any
+	Table    map[string]any
 	Special  string
+	Rush     bool
 }
 
 type KitchenTicket struct{}
@@ -21,11 +24,37 @@ func NewKitchenTicket() *KitchenTicket {
 
 func (kt *KitchenTicket) print_ticket(order Order) string {
 	lines := []string{}
-	lines = append(lines, "Table: "+kt.itoa(order.Table))
-	lines = append(lines, "Customer: "+order.Customer)
-	for _, item := range order.Items {
-		lines = append(lines, item.Name+" x"+kt.itoa(item.Qty))
+	lines = append(lines, "Table: "+kt.itoa(order.Table["number"].(int)))
+	if order.Table["zone"] != nil {
+		lines = append(lines, "Zone: "+order.Table["zone"].(string))
+	} else {
+		lines = append(lines, "Zone: main")
 	}
+	if order.Table["server"] != nil {
+		lines = append(lines, "Server: "+order.Table["server"].(string))
+	} else {
+		lines = append(lines, "Server: unassigned")
+	}
+	lines = append(lines, "Customer: "+order.Customer["name"].(string))
+	if order.Customer["vip"] == true {
+		lines = append(lines, "VIP")
+	}
+	if order.Rush {
+		lines = append(lines, "RUSH")
+	}
+	totalItems := 0
+	for _, item := range order.Items {
+		totalItems += item.Qty
+		line := item.Name + " x" + kt.itoa(item.Qty)
+		if len(item.Modifiers) > 0 {
+			line += " [" + strings.Join(item.Modifiers, ", ") + "]"
+		}
+		if item.Allergy != "" {
+			line += " ALLERGY:" + item.Allergy
+		}
+		lines = append(lines, line)
+	}
+	lines = append(lines, "Items: "+kt.itoa(totalItems))
 	if len(order.Special) > 0 {
 		lines = append(lines, "Special: "+order.Special)
 	}

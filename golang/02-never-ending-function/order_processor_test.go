@@ -94,3 +94,12 @@ func TestProcessOrderIncludesEmailConfirmation(t *testing.T) {
 		t.Errorf("expected OrderID to start with 'ORD-', got %q", result.OrderID)
 	}
 }
+
+func TestProcessOrderQuantity100NotOutOfStock(t *testing.T) {
+	op := NewOrderProcessor()
+	order := Order{Items: []Item{{Price: 1, Quantity: 100}}, Customer: Customer{Email: "a@b.com"}, Address: Address{Zip: "12345"}}
+	result := op.process_order(order)
+	if result.Error != "" {
+		t.Errorf("expected no error for quantity 100, got %q", result.Error)
+	}
+}

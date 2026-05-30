@@ -2,44 +2,48 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { InventoryItem } from '../src/inventory_item.js';
 
-test('stores and returns id', () => {
+test('public snapshot contains business fields', () => {
   const item = new InventoryItem(1, 'Widget', 'B001', 123, 99, 10);
-  assert.strictEqual(item.get_id(), 1);
-  item.set_id(2);
-  assert.strictEqual(item.get_id(), 2);
+  assert.deepStrictEqual(item.public_snapshot(), {
+    id: 1,
+    name: 'Widget',
+    batch_number: 'B001',
+    quantity: 10,
+    stock_status: 'available',
+  });
 });
 
-test('stores and returns name', () => {
+test('reserves stock and reports remaining quantity', () => {
   const item = new InventoryItem(1, 'Widget', 'B001', 123, 99, 10);
-  assert.strictEqual(item.get_name(), 'Widget');
-  item.set_name('Gadget');
-  assert.strictEqual(item.get_name(), 'Gadget');
+  const result = item.reserve(3);
+  assert.deepStrictEqual(result, { status: 'reserved', reserved: 3, remaining: 7, sku: '1-B001' });
+  assert.strictEqual(item.public_snapshot().quantity, 7);
 });
 
-test('stores and returns batch number', () => {
+test('rejects reservation when quantity is invalid', () => {
   const item = new InventoryItem(1, 'Widget', 'B001', 123, 99, 10);
-  assert.strictEqual(item.get_batch_number(), 'B001');
-  item.set_batch_number('B002');
-  assert.strictEqual(item.get_batch_number(), 'B002');
+  const result = item.reserve(0);
+  assert.deepStrictEqual(result, { status: 'rejected', reason: 'invalid_quantity', remaining: 10 });
+  assert.strictEqual(item.public_snapshot().quantity, 10);
 });
 
-test('stores and returns cache timestamp', () => {
+test('backorders when not enough stock', () => {
   const item = new InventoryItem(1, 'Widget', 'B001', 123, 99, 10);
-  assert.strictEqual(item.get_cache_timestamp(), 123);
-  item.set_cache_timestamp(456);
-  assert.strictEqual(item.get_cache_timestamp(), 456);
+  const result = item.reserve(12);
+  assert.deepStrictEqual(result, { status: 'backorder', reserved: 0, remaining: 10 });
+  assert.strictEqual(item.public_snapshot().quantity, 10);
 });
 
-test('stores and returns row id', () => {
+test('receives stock after low quantity', () => {
   const item = new InventoryItem(1, 'Widget', 'B001', 123, 99, 10);
-  assert.strictEqual(item.get_row_id(), 99);
-  item.set_row_id(100);
-  assert.strictEqual(item.get_row_id(), 100);
+  item.reserve(8);
+  assert.strictEqual(item.public_snapshot().stock_status, 'low');
+  assert.strictEqual(item.receive_stock(5), 7);
+  assert.strictEqual(item.public_snapshot().stock_status, 'available');
 });
 
-test('stores and returns quantity', () => {
+test('reports out of stock after exact reservation', () => {
   const item = new InventoryItem(1, 'Widget', 'B001', 123, 99, 10);
-  assert.strictEqual(item.get_quantity(), 10);
-  item.set_quantity(5);
-  assert.strictEqual(item.get_quantity(), 5);
+  item.reserve(10);
+  assert.strictEqual(item.public_snapshot().stock_status, 'out');
 });

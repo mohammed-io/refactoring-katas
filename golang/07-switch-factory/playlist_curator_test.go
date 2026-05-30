@@ -83,6 +83,42 @@ func TestCreatePlaylistDefaultsTo10(t *testing.T) {
 	}
 }
 
+func TestCreatePlaylistCapsWorkoutAt25(t *testing.T) {
+	pc := NewPlaylistCurator()
+	tracks := make([]Track, 30)
+	for i := range tracks {
+		tracks[i] = Track{Title: string(rune('A' + i%26)), Tempo: 140, Energy: 8, Instrumental: false, Danceability: 0}
+	}
+	result := pc.create_playlist("workout", tracks)
+	if len(result) != 25 {
+		t.Fatalf("workout cap: expected 25, got %d", len(result))
+	}
+}
+
+func TestCreatePlaylistCapsFocusAt30(t *testing.T) {
+	pc := NewPlaylistCurator()
+	tracks := make([]Track, 35)
+	for i := range tracks {
+		tracks[i] = Track{Title: string(rune('A' + i%26)), Tempo: 0, Energy: 0, Instrumental: true, Danceability: 0}
+	}
+	result := pc.create_playlist("focus", tracks)
+	if len(result) != 30 {
+		t.Fatalf("focus cap: expected 30, got %d", len(result))
+	}
+}
+
+func TestCreatePlaylistCapsPartyAt20(t *testing.T) {
+	pc := NewPlaylistCurator()
+	tracks := make([]Track, 25)
+	for i := range tracks {
+		tracks[i] = Track{Title: string(rune('A' + i%26)), Tempo: 120, Energy: 0, Instrumental: false, Danceability: 7}
+	}
+	result := pc.create_playlist("party", tracks)
+	if len(result) != 20 {
+		t.Fatalf("party cap: expected 20, got %d", len(result))
+	}
+}
+
 func TestCreatePlaylistSortsHappyDescending(t *testing.T) {
 	pc := NewPlaylistCurator()
 	tracks := []Track{{"A", 130, 0, false, 0}, {"B", 150, 0, false, 0}}

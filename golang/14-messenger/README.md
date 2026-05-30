@@ -6,7 +6,7 @@ This kata is about a notification sender. The implementation works and the tests
 
 ## Component Usage
 
-The component passes a notification payload through forwarding service layers. Treat the tests as the contract while you improve the internal design.
+The component validates, normalizes, audits, and sends a notification payload through thin forwarding service layers. Treat the tests as the contract while you improve the internal design.
 
 ## How to Run
 

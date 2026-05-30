@@ -70,3 +70,29 @@ test('rejects missing weight', () => {
   assert.strictEqual(result.allowed, false);
   assert.strictEqual(result.warning, 'No weight specified');
 });
+
+test('weight 50 is allowed at boundary', () => {
+  const approver = new LoanApprover();
+  const result = approver.can_deliver({ weight: 50, hazardous: false, weekend: false });
+  assert.strictEqual(result.allowed, true);
+  assert.strictEqual(result.warning, null);
+});
+
+test('temperature 40 is allowed at boundary', () => {
+  const approver = new LoanApprover();
+  const result = approver.can_deliver({ weight: 10, hazardous: false, weekend: false, temperatureRequired: 40 });
+  assert.strictEqual(result.allowed, true);
+});
+
+test('temperature -20 is allowed at boundary', () => {
+  const approver = new LoanApprover();
+  const result = approver.can_deliver({ weight: 10, hazardous: false, weekend: false, temperatureRequired: -20 });
+  assert.strictEqual(result.allowed, true);
+});
+
+test('remote area weight 20 is allowed at boundary', () => {
+  const approver = new LoanApprover();
+  const result = approver.can_deliver({ weight: 20, hazardous: false, weekend: false, remoteArea: true });
+  assert.strictEqual(result.allowed, true);
+  assert.strictEqual(result.warning, 'Remote surcharge applies');
+});

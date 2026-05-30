@@ -22,6 +22,7 @@ public class CampaignSenderTest
             new CampaignCustomer(true, "EU", false)
         }, "Hi");
         Assert.Equal(0, result.Sent);
+        Assert.Equal(1, result.Skipped);
     }
 
     [Fact]
@@ -58,6 +59,32 @@ public class CampaignSenderTest
             new CampaignCustomer(false, "US", false)
         }, "Hi");
         Assert.Equal(2, result.Sent);
+        Assert.Equal(2, result.Skipped);
+    }
+
+    [Fact]
+    public void SkipsUnsubscribedCustomers()
+    {
+        var estimator = new CampaignSender();
+        var result = estimator.send_campaign(new List<CampaignCustomer>
+        {
+            new CampaignCustomer(true, "US", false, true)
+        }, "Hi");
+        Assert.Equal(0, result.Sent);
+        Assert.Equal(1, result.Skipped);
+    }
+
+    [Fact]
+    public void DryRunNeverSendsButKeepsSkipCount()
+    {
+        var estimator = new CampaignSender();
+        var result = estimator.send_campaign(new List<CampaignCustomer>
+        {
+            new CampaignCustomer(true, "US", false),
+            new CampaignCustomer(false, "US", false)
+        }, "__dry_run__");
+        Assert.Equal(0, result.Sent);
+        Assert.Equal(1, result.Skipped);
     }
 
     [Fact]

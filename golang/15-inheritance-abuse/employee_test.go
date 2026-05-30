@@ -50,3 +50,24 @@ func TestCalculateBonusManagerRespectsCapFromSeniorManager(t *testing.T) {
 		t.Errorf("expected bonus 15000 (no cap for Manager), got %v", mgr.calculate_bonus())
 	}
 }
+
+func TestCalculateTotalRewardEmployeeAddsHighPerformanceAndTenure(t *testing.T) {
+	emp := NewEmployee("Alice", 50000, "employee")
+	if got := emp.calculate_total_reward("high", 5); got != 2000 {
+		t.Errorf("expected reward 2000, got %v", got)
+	}
+}
+
+func TestCalculateTotalRewardSeniorManagerUsesCappedBonusAndTenureRule(t *testing.T) {
+	sm := NewEmployee("Carol", 300000, "senior_manager")
+	if got := sm.calculate_total_reward("normal", 7); got != 11500 {
+		t.Errorf("expected reward 11500, got %v", got)
+	}
+}
+
+func TestCalculateTotalRewardDirectorUsesDirectorPerformanceRule(t *testing.T) {
+	dir := NewEmployee("Dana", 200000, "director")
+	if got := dir.calculate_total_reward("high", 3); got != 16000 {
+		t.Errorf("expected reward 16000, got %v", got)
+	}
+}

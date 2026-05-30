@@ -54,3 +54,9 @@ def test_includes_email_confirmation():
     result = processor.process_order(order(email="user@test.com"))
     assert result["email"]["to"] == "user@test.com"
     assert result["email"]["subject"] == "Order Confirmation"
+
+
+def test_quantity_100_not_out_of_stock():
+    processor = OrderProcessor()
+    result = processor.process_order(order(price=1, quantity=100))
+    assert "error" not in result

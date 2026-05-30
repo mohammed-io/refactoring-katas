@@ -3,6 +3,7 @@
 - [ ] Variables assigned but not meaningfully used
 - [ ] Branches that cannot run
 - [ ] Old calculations that do not affect the result
+- [ ] Eligibility, skip reasons, and dry-run behavior are mixed together
 
 ## Common Pitfalls
 

@@ -57,4 +57,25 @@ public class VehicleTest
         var v = new Truck("Ford", "F-150", 2020);
         Assert.Equal("F-150", v.Model);
     }
+
+    [Fact]
+    public void DieselCarRentalTotalCombinesRateFuelInsuranceAndGps()
+    {
+        var v = new DieselCar("VW", "Jetta", 2020);
+        Assert.Equal(195, v.rental_total(3, true));
+    }
+
+    [Fact]
+    public void ElectricTruckRentalTotalCombinesTruckRateAndInsurance()
+    {
+        var v = new ElectricTruck("Rivian", "R1T", 2020);
+        Assert.Equal(200, v.rental_total(2, false));
+    }
+
+    [Fact]
+    public void DieselTruckRentalTotalIncludesHigherFuelCost()
+    {
+        var v = new DieselTruck("Ford", "F-250", 2020);
+        Assert.Equal(246, v.rental_total(2, true));
+    }
 }

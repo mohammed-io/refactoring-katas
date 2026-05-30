@@ -7,22 +7,32 @@ type MonoItem struct {
 	Quantity int
 }
 type MonoCustomer struct {
-	Type  string
-	Email string
+	Type      string
+	Email     string
+	Country   string
+	TaxExempt bool
+}
+type MonoShipping struct {
+	Speed string
 }
 type MonoOrder struct {
 	ID       int
 	Items    []MonoItem
 	Customer MonoCustomer
+	Coupon   string
+	Shipping MonoShipping
 }
 type MonoResult struct {
-	Error         string
-	OrderID       int
-	Total         float64
-	PaymentStatus string
-	Carrier       string
-	EmailTo       string
-	Log           string
+	Error          string
+	OrderID        int
+	Total          float64
+	PaymentStatus  string
+	Carrier        string
+	EmailTo        string
+	Log            string
+	LoyaltyPoints  int
+	TaxRate        float64
+	ShippingWeight int
 }
 
 type LegacySystem struct{}
@@ -42,6 +52,12 @@ func (ls *LegacySystem) process_everything(order MonoOrder) MonoResult {
 		if i.Price > 0 {
 			x += i.Price * float64(i.Quantity)
 		}
+		if i.Quantity > 0 {
+			y += i.Quantity
+		}
+	}
+	if x <= 0 {
+		return MonoResult{Error: "Invalid total"}
 	}
 	d := 0.0
 	if order.Customer.Type == "vip" {
@@ -52,7 +68,17 @@ func (ls *LegacySystem) process_everything(order MonoOrder) MonoResult {
 	if x > 100 {
 		d += 10
 	}
-	total := x - d + (x-d)*.07
+	if order.Coupon == "SAVE10" {
+		d += x * .1
+	}
+	taxRate := .07
+	if order.Customer.Country == "EU" {
+		taxRate = .2
+	}
+	if order.Customer.TaxExempt {
+		taxRate = 0
+	}
+	total := x - d + (x-d)*taxRate
 	status := "approved"
 	if total > 5000 {
 		status = "manual_review"
@@ -61,5 +87,8 @@ func (ls *LegacySystem) process_everything(order MonoOrder) MonoResult {
 	if total > 50 {
 		carrier = "UPS"
 	}
-	return MonoResult{OrderID: order.ID, Total: math.Round(total*100) / 100, PaymentStatus: status, Carrier: carrier, EmailTo: order.Customer.Email, Log: "Order processed"}
+	if order.Shipping.Speed == "express" {
+		carrier = "FedEx"
+	}
+	return MonoResult{OrderID: order.ID, Total: math.Round(total*100) / 100, PaymentStatus: status, Carrier: carrier, EmailTo: order.Customer.Email, Log: "Order processed", LoyaltyPoints: int(total / 10), TaxRate: taxRate, ShippingWeight: y}
 }

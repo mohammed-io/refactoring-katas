@@ -41,3 +41,18 @@ test('truck stores model', () => {
   const v = new Truck('Ford', 'F-150', 2020);
   assert.strictEqual(v.model, 'F-150');
 });
+
+test('diesel car rental total combines rate fuel insurance and gps', () => {
+  const v = new DieselCar('VW', 'Jetta', 2020);
+  assert.strictEqual(v.rental_total(3, true), 195);
+});
+
+test('electric truck rental total combines truck rate and insurance', () => {
+  const v = new ElectricTruck('Rivian', 'R1T', 2020);
+  assert.strictEqual(v.rental_total(2, false), 200);
+});
+
+test('diesel truck rental total includes higher fuel cost', () => {
+  const v = new DieselTruck('Ford', 'F-250', 2020);
+  assert.strictEqual(v.rental_total(2, true), 246);
+});

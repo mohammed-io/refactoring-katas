@@ -30,7 +30,7 @@ public class Account
     {
         if (pw == Password)
         {
-            AuditLog.Add("login");
+            AuditLog.Add("login:" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
             return true;
         }
         return false;
@@ -69,6 +69,36 @@ public class Account
     {
         Notifications[t] = v;
         return Notifications;
+    }
+
+    public bool logout()
+    {
+        AuditLog.Add("logout:" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        return true;
+    }
+
+    public dynamic export_data()
+    {
+        return new
+        {
+            email = Email,
+            profile = Profile,
+            paymentMethods = PaymentMethods,
+            notifications = Notifications,
+            auditLog = AuditLog,
+            subscription = Subscription
+        };
+    }
+
+    public int log_access(string action)
+    {
+        AuditLog.Add(action + ":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        return AuditLog.Count;
+    }
+
+    public string check_subscription()
+    {
+        return Subscription;
     }
 
     public string upgrade_subscription(string p)

@@ -6,7 +6,7 @@ This kata is about a warehouse inventory item. The implementation works and the 
 
 ## Component Usage
 
-The component stores inventory data while exposing many internal fields. Treat the tests as the contract while you improve the internal design.
+The component stores inventory data, exposes many internal fields, and also handles stock reservation and receiving. Treat the tests as the contract while you improve the internal design.
 
 ## How to Run
 

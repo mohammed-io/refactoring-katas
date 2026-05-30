@@ -5,56 +5,70 @@ import (
 	"testing"
 )
 
-func TestPrintTicketPrintsSimpleTicket(t *testing.T) {
-	kp := NewKitchenTicket()
-	order := Order{Items: []TicketItem{{Name: "Burger", Qty: 1}}, Customer: "Alice", Table: 5, Special: ""}
-	result := kp.print_ticket(order)
-	if !strings.Contains(result, "Table: 5") {
-		t.Error("expected ticket to contain 'Table: 5'")
-	}
-	if !strings.Contains(result, "Customer: Alice") {
-		t.Error("expected ticket to contain 'Customer: Alice'")
-	}
-	if !strings.Contains(result, "Burger x1") {
-		t.Error("expected ticket to contain 'Burger x1'")
+func makeOrder() Order {
+	return Order{
+		Items:    []TicketItem{{Name: "Burger", Qty: 1}},
+		Customer: map[string]any{"name": "Alice", "vip": false},
+		Table:    map[string]any{"number": 5, "zone": "patio", "server": "Sam"},
+		Special:  "",
+		Rush:     false,
 	}
 }
 
-func TestPrintTicketPrintsTicketWithMultipleItems(t *testing.T) {
-	kp := NewKitchenTicket()
-	order := Order{Items: []TicketItem{{Name: "Burger", Qty: 2}, {Name: "Fries", Qty: 1}}, Customer: "Bob", Table: 12, Special: ""}
-	result := kp.print_ticket(order)
-	if !strings.Contains(result, "Burger x2") {
-		t.Error("expected ticket to contain 'Burger x2'")
-	}
-	if !strings.Contains(result, "Fries x1") {
-		t.Error("expected ticket to contain 'Fries x1'")
+func TestPrintTicketPrintsTableCustomerAndServerDetails(t *testing.T) {
+	result := NewKitchenTicket().print_ticket(makeOrder())
+	for _, want := range []string{"Table: 5", "Zone: patio", "Server: Sam", "Customer: Alice"} {
+		if !strings.Contains(result, want) {
+			t.Errorf("expected ticket to contain %q", want)
+		}
 	}
 }
 
-func TestPrintTicketPrintsTicketWithSpecialInstructions(t *testing.T) {
-	kp := NewKitchenTicket()
-	order := Order{Items: []TicketItem{{Name: "Salad", Qty: 1}}, Customer: "Carol", Table: 3, Special: "No onions"}
-	result := kp.print_ticket(order)
-	if !strings.Contains(result, "Special: No onions") {
-		t.Error("expected ticket to contain 'Special: No onions'")
+func TestPrintTicketPrintsTicketWithMultipleItemsAndCount(t *testing.T) {
+	order := makeOrder()
+	order.Items = []TicketItem{{Name: "Burger", Qty: 2}, {Name: "Fries", Qty: 1}}
+	result := NewKitchenTicket().print_ticket(order)
+	for _, want := range []string{"Burger x2", "Fries x1", "Items: 3"} {
+		if !strings.Contains(result, want) {
+			t.Errorf("expected ticket to contain %q", want)
+		}
 	}
 }
 
-func TestPrintTicketOmitsSpecialWhenEmpty(t *testing.T) {
-	kp := NewKitchenTicket()
-	order := Order{Items: []TicketItem{{Name: "Pizza", Qty: 1}}, Customer: "Dave", Table: 7, Special: ""}
-	result := kp.print_ticket(order)
+func TestPrintTicketPrintsModifiersAndAllergyFlags(t *testing.T) {
+	order := makeOrder()
+	order.Items = []TicketItem{{Name: "Salad", Qty: 1, Modifiers: []string{"no onion", "dressing side"}, Allergy: "nuts"}}
+	result := NewKitchenTicket().print_ticket(order)
+	if !strings.Contains(result, "Salad x1 [no onion, dressing side] ALLERGY:nuts") {
+		t.Errorf("expected modifiers and allergy, got %q", result)
+	}
+}
+
+func TestPrintTicketPrintsVipAndRushMarkers(t *testing.T) {
+	order := makeOrder()
+	order.Customer = map[string]any{"name": "Carol", "vip": true}
+	order.Rush = true
+	result := NewKitchenTicket().print_ticket(order)
+	if !strings.Contains(result, "VIP") || !strings.Contains(result, "RUSH") {
+		t.Errorf("expected vip and rush markers, got %q", result)
+	}
+}
+
+func TestPrintTicketOmitsSpecialWhenEmptyButKeepsSeparator(t *testing.T) {
+	result := NewKitchenTicket().print_ticket(makeOrder())
 	if strings.Contains(result, "Special:") {
-		t.Error("expected ticket to NOT contain 'Special:'")
+		t.Error("expected ticket to omit special")
+	}
+	if !strings.Contains(result, "---") {
+		t.Error("expected separator")
 	}
 }
 
-func TestPrintTicketIncludesSeparatorLine(t *testing.T) {
-	kp := NewKitchenTicket()
-	order := Order{Items: []TicketItem{{Name: "Soup", Qty: 1}}, Customer: "Eve", Table: 1, Special: ""}
-	result := kp.print_ticket(order)
-	if !strings.Contains(result, "---") {
-		t.Error("expected ticket to contain '---'")
+func TestPrintTicketPrintsSpecialInstructions(t *testing.T) {
+	order := makeOrder()
+	order.Special = "Fire mains after starters"
+	result := NewKitchenTicket().print_ticket(order)
+	if !strings.Contains(result, "Special: Fire mains after starters") {
+		t.Errorf("expected special instruction, got %q", result)
 	}
 }

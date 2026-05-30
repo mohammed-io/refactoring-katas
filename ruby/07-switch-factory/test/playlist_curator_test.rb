@@ -56,6 +56,24 @@ class PlaylistCuratorTest < Minitest::Test
     assert_equal 10, result.length
   end
 
+  def test_caps_workout_playlist_at_25
+    tracks = Array.new(30) { |i| { title: i.to_s, tempo: 140, energy: 8 } }
+    result = @curator.create_playlist('workout', tracks)
+    assert_equal 25, result.length
+  end
+
+  def test_caps_focus_playlist_at_30
+    tracks = Array.new(35) { |i| { title: i.to_s, instrumental: true } }
+    result = @curator.create_playlist('focus', tracks)
+    assert_equal 30, result.length
+  end
+
+  def test_caps_party_playlist_at_20
+    tracks = Array.new(25) { |i| { title: i.to_s, tempo: 120, danceability: 7 } }
+    result = @curator.create_playlist('party', tracks)
+    assert_equal 20, result.length
+  end
+
   def test_sorts_happy_by_descending_tempo
     result = @curator.create_playlist('happy', [{ title: 'A', tempo: 130 }, { title: 'B', tempo: 150 }])
     assert_equal 'B', result[0][:title]

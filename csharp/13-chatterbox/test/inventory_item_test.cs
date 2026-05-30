@@ -1,58 +1,77 @@
 using Xunit;
+using System.Collections.Generic;
 
 public class InventoryItemTest
 {
     [Fact]
-    public void StoresAndReturnsId()
+    public void PublicSnapshotContainsBusinessFields()
     {
         var item = new InventoryItem(1, "Widget", "B001", 123, 99, 10);
-        Assert.Equal(1, item.get_id());
-        item.set_id(2);
-        Assert.Equal(2, item.get_id());
+        Assert.Equal(new Dictionary<string, object>
+        {
+            ["id"] = 1,
+            ["name"] = "Widget",
+            ["batch_number"] = "B001",
+            ["quantity"] = 10,
+            ["stock_status"] = "available"
+        }, item.public_snapshot());
     }
 
     [Fact]
-    public void StoresAndReturnsName()
+    public void ReservesStockAndReportsRemainingQuantity()
     {
         var item = new InventoryItem(1, "Widget", "B001", 123, 99, 10);
-        Assert.Equal("Widget", item.get_name());
-        item.set_name("Gadget");
-        Assert.Equal("Gadget", item.get_name());
+        Assert.Equal(new Dictionary<string, object>
+        {
+            ["status"] = "reserved",
+            ["reserved"] = 3,
+            ["remaining"] = 7,
+            ["sku"] = "1-B001"
+        }, item.reserve(3));
+        Assert.Equal(7, item.public_snapshot()["quantity"]);
     }
 
     [Fact]
-    public void StoresAndReturnsBatchNumber()
+    public void RejectsReservationWhenQuantityIsInvalid()
     {
         var item = new InventoryItem(1, "Widget", "B001", 123, 99, 10);
-        Assert.Equal("B001", item.GetBatchNumber());
-        item.SetBatchNumber("B002");
-        Assert.Equal("B002", item.GetBatchNumber());
+        Assert.Equal(new Dictionary<string, object>
+        {
+            ["status"] = "rejected",
+            ["reason"] = "invalid_quantity",
+            ["remaining"] = 10
+        }, item.reserve(0));
+        Assert.Equal(10, item.public_snapshot()["quantity"]);
     }
 
     [Fact]
-    public void StoresAndReturnsCacheTimestamp()
+    public void BackordersWhenNotEnoughStock()
     {
         var item = new InventoryItem(1, "Widget", "B001", 123, 99, 10);
-        Assert.Equal(123, item.GetCacheTimestamp());
-        item.SetCacheTimestamp(456);
-        Assert.Equal(456, item.GetCacheTimestamp());
+        Assert.Equal(new Dictionary<string, object>
+        {
+            ["status"] = "backorder",
+            ["reserved"] = 0,
+            ["remaining"] = 10
+        }, item.reserve(12));
+        Assert.Equal(10, item.public_snapshot()["quantity"]);
     }
 
     [Fact]
-    public void StoresAndReturnsRowId()
+    public void ReceivesStockAfterLowQuantity()
     {
         var item = new InventoryItem(1, "Widget", "B001", 123, 99, 10);
-        Assert.Equal(99, item.GetRowId());
-        item.SetRowId(100);
-        Assert.Equal(100, item.GetRowId());
+        item.reserve(8);
+        Assert.Equal("low", item.public_snapshot()["stock_status"]);
+        Assert.Equal(7, item.receive_stock(5));
+        Assert.Equal("available", item.public_snapshot()["stock_status"]);
     }
 
     [Fact]
-    public void StoresAndReturnsQuantity()
+    public void ReportsOutOfStockAfterExactReservation()
     {
         var item = new InventoryItem(1, "Widget", "B001", 123, 99, 10);
-        Assert.Equal(10, item.get_quantity());
-        item.set_quantity(5);
-        Assert.Equal(5, item.get_quantity());
+        item.reserve(10);
+        Assert.Equal("out", item.public_snapshot()["stock_status"]);
     }
 }

@@ -1,36 +1,50 @@
 import assert from 'node:assert';
 import test from 'node:test';
-import { KitchenTicket } from '../src/kitchen_ticket.js';
+import { KitchenTicket, Order } from '../src/kitchen_ticket.js';
 
-test('prints simple ticket', () => {
-  const order = new KitchenTicket([{ name: 'Burger', qty: 1 }], 'Alice', 5, '');
-  const result = order.print_ticket();
+function makeOrder({ items, customer, table, special = '', rush = false } = {}) {
+  return new Order(
+    items || [{ name: 'Burger', qty: 1 }],
+    customer || { name: 'Alice', vip: false },
+    table || { number: 5, zone: 'patio', server: 'Sam' },
+    special,
+    rush,
+  );
+}
+
+test('prints table customer and server details', () => {
+  const result = new KitchenTicket().print_ticket(makeOrder());
   assert.ok(result.includes('Table: 5'));
+  assert.ok(result.includes('Zone: patio'));
+  assert.ok(result.includes('Server: Sam'));
   assert.ok(result.includes('Customer: Alice'));
-  assert.ok(result.includes('Burger x1'));
 });
 
-test('prints ticket with multiple items', () => {
-  const order = new KitchenTicket([{ name: 'Burger', qty: 2 }, { name: 'Fries', qty: 1 }], 'Bob', 12, '');
-  const result = order.print_ticket();
+test('prints ticket with multiple items and count', () => {
+  const result = new KitchenTicket().print_ticket(makeOrder({ items: [{ name: 'Burger', qty: 2 }, { name: 'Fries', qty: 1 }] }));
   assert.ok(result.includes('Burger x2'));
   assert.ok(result.includes('Fries x1'));
+  assert.ok(result.includes('Items: 3'));
 });
 
-test('prints ticket with special instructions', () => {
-  const order = new KitchenTicket([{ name: 'Salad', qty: 1 }], 'Carol', 3, 'No onions');
-  const result = order.print_ticket();
-  assert.ok(result.includes('Special: No onions'));
+test('prints modifiers and allergy flags', () => {
+  const result = new KitchenTicket().print_ticket(makeOrder({ items: [{ name: 'Salad', qty: 1, modifiers: ['no onion', 'dressing side'], allergy: 'nuts' }] }));
+  assert.ok(result.includes('Salad x1 [no onion, dressing side] ALLERGY:nuts'));
 });
 
-test('omits special when empty', () => {
-  const order = new KitchenTicket([{ name: 'Pizza', qty: 1 }], 'Dave', 7, '');
-  const result = order.print_ticket();
+test('prints vip and rush markers', () => {
+  const result = new KitchenTicket().print_ticket(makeOrder({ customer: { name: 'Carol', vip: true }, rush: true }));
+  assert.ok(result.includes('VIP'));
+  assert.ok(result.includes('RUSH'));
+});
+
+test('omits special when empty but keeps separator', () => {
+  const result = new KitchenTicket().print_ticket(makeOrder({ special: '' }));
   assert.ok(!result.includes('Special:'));
+  assert.ok(result.includes('---'));
 });
 
-test('includes separator line', () => {
-  const order = new KitchenTicket([{ name: 'Soup', qty: 1 }], 'Eve', 1, '');
-  const result = order.print_ticket();
-  assert.ok(result.includes('---'));
+test('prints special instructions', () => {
+  const result = new KitchenTicket().print_ticket(makeOrder({ special: 'Fire mains after starters' }));
+  assert.ok(result.includes('Special: Fire mains after starters'));
 });

@@ -50,4 +50,25 @@ public class EmployeeTest
         var mgr = new Manager("Eve", 300000);
         Assert.Equal(15000m, mgr.calculate_bonus());
     }
+
+    [Fact]
+    public void EmployeeTotalRewardAddsHighPerformanceAndTenure()
+    {
+        var emp = new Employee("Alice", 50000);
+        Assert.Equal(2000m, emp.calculate_total_reward("high", 5));
+    }
+
+    [Fact]
+    public void SeniorManagerTotalRewardUsesCappedBonusAndTenureRule()
+    {
+        var sm = new SeniorManager("Carol", 300000);
+        Assert.Equal(11500m, sm.calculate_total_reward("normal", 7));
+    }
+
+    [Fact]
+    public void DirectorTotalRewardUsesDirectorPerformanceRule()
+    {
+        var dir = new Director("Dana", 200000);
+        Assert.Equal(16000m, dir.calculate_total_reward("high", 3));
+    }
 }

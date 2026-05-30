@@ -59,4 +59,35 @@ class InventoryItem
   def set_quantity(v)
     @quantity = v
   end
+
+  def reserve(units)
+    return { status: 'rejected', reason: 'invalid_quantity', remaining: @quantity } if units <= 0
+    return { status: 'backorder', reserved: 0, remaining: @quantity } if units > @quantity
+
+    @quantity -= units
+    { status: 'reserved', reserved: units, remaining: @quantity, sku: "#{@id}-#{@batch_number}" }
+  end
+
+  def receive_stock(units)
+    return @quantity if units <= 0
+
+    @quantity += units
+  end
+
+  def public_snapshot
+    {
+      id: @id,
+      name: @name,
+      batch_number: @batch_number,
+      quantity: @quantity,
+      stock_status: stock_status
+    }
+  end
+
+  def stock_status
+    return 'out' if @quantity.zero?
+    return 'low' if @quantity < 5
+
+    'available'
+  end
 end

@@ -36,13 +36,13 @@ public class PlaylistCurator
 
             case "focus":
                 result = tracks.Where(t => t.Instrumental)
-                              .Take(20)
+                              .Take(30)
                               .ToList();
                 break;
 
             case "party":
-                result = tracks.Where(t => t.Tempo >= 120 && t.Danceability >= 6)
-                              .Take(30)
+                result = tracks.Where(t => t.Tempo > 110 && t.Danceability > 6)
+                              .Take(20)
                               .ToList();
                 break;
 

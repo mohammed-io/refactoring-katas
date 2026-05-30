@@ -25,7 +25,7 @@ class FraudDetectorTest < Minitest::Test
     assert_equal 2, result[:level]
   end
 
-  def test_elevated_risk_for_gambling
+  def test_gambling_merchant_is_medium_risk
     result = @detector.detect(
       amount: 100, timestamp: @now, history: [], merchant: 'gambling', country: 'US', card_country: 'US'
     )
@@ -33,7 +33,7 @@ class FraudDetectorTest < Minitest::Test
     assert_equal 2, result[:level]
   end
 
-  def test_high_risk_for_cross_border
+  def test_cross_border_alone_is_low_risk
     result = @detector.detect(
       amount: 1000, timestamp: @now, history: [], merchant: 'grocery', country: 'FR', card_country: 'US'
     )
@@ -58,7 +58,7 @@ class FraudDetectorTest < Minitest::Test
     assert_equal 2, result[:level]
   end
 
-  def test_volume_spikes_increase_risk
+  def test_volume_spikes_alone_stay_low_risk
     hist = [
       { amount: 200, timestamp: @now - 10_000 },
       { amount: 200, timestamp: @now - 20_000 },

@@ -45,7 +45,6 @@ func (pc *PlaylistCurator) create_playlist(mood string, tracks []Track) []Track 
 				result = append(result, t)
 			}
 		}
-		sort.Slice(result, func(i, j int) bool { return result[i].Energy > result[j].Energy })
 		if len(result) > 25 {
 			result = result[:25]
 		}
@@ -55,7 +54,6 @@ func (pc *PlaylistCurator) create_playlist(mood string, tracks []Track) []Track 
 				result = append(result, t)
 			}
 		}
-		sort.Slice(result, func(i, j int) bool { return result[i].Tempo < result[j].Tempo })
 		if len(result) > 30 {
 			result = result[:30]
 		}
@@ -65,7 +63,6 @@ func (pc *PlaylistCurator) create_playlist(mood string, tracks []Track) []Track 
 				result = append(result, t)
 			}
 		}
-		sort.Slice(result, func(i, j int) bool { return result[i].Danceability > result[j].Danceability })
 		if len(result) > 20 {
 			result = result[:20]
 		}

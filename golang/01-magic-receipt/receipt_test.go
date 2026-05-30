@@ -49,3 +49,11 @@ func TestCalculateTotalReturns0ForEmptyItems(t *testing.T) {
 		t.Errorf("calculate_total([], '') = %v, want 0", got)
 	}
 }
+
+func TestCalculateTotalExactly50NoBonus(t *testing.T) {
+	r := NewReceipt()
+	got := r.calculate_total([]float64{50}, "")
+	if got != 54.0 {
+		t.Errorf("calculate_total([50], '') = %v, want 54.0", got)
+	}
+}

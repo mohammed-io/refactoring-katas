@@ -90,4 +90,38 @@ public class LoanApproverTest
         Assert.False(result.Allowed);
         Assert.Equal("No weight specified", result.Warning);
     }
+
+    [Fact]
+    public void Weight50AllowedAtBoundary()
+    {
+        var checker = new LoanApprover();
+        var result = checker.can_deliver(new Package { Weight = 50, Hazardous = false, Weekend = false });
+        Assert.True(result.Allowed);
+        Assert.Null(result.Warning);
+    }
+
+    [Fact]
+    public void Temperature40AllowedAtBoundary()
+    {
+        var checker = new LoanApprover();
+        var result = checker.can_deliver(new Package { Weight = 10, Hazardous = false, Weekend = false, TemperatureRequired = 40 });
+        Assert.True(result.Allowed);
+    }
+
+    [Fact]
+    public void TemperatureMinus20AllowedAtBoundary()
+    {
+        var checker = new LoanApprover();
+        var result = checker.can_deliver(new Package { Weight = 10, Hazardous = false, Weekend = false, TemperatureRequired = -20 });
+        Assert.True(result.Allowed);
+    }
+
+    [Fact]
+    public void RemoteWeight20AllowedAtBoundary()
+    {
+        var checker = new LoanApprover();
+        var result = checker.can_deliver(new Package { Weight = 20, Hazardous = false, Weekend = false, RemoteArea = true });
+        Assert.True(result.Allowed);
+        Assert.Equal("Remote surcharge applies", result.Warning);
+    }
 }

@@ -43,4 +43,11 @@ public class ReceiptTest
         var receipt = new Receipt();
         Assert.Equal(0m, receipt.calculate_total(Array.Empty<decimal>()));
     }
+
+    [Fact]
+    public void Exactly50NoBonus()
+    {
+        var receipt = new Receipt();
+        Assert.Equal(54.0m, receipt.calculate_total(new[] { 50m }));
+    }
 }
