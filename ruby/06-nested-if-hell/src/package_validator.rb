@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LoanApprover
+class PackageValidator
   def can_deliver(pkg)
     return { allowed: false, warning: 'No package' } unless pkg
     return { allowed: false, warning: 'No weight specified' } unless pkg[:weight]

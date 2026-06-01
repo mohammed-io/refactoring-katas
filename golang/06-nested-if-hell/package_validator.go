@@ -13,25 +13,25 @@ type DeliveryResult struct {
 	Warning string
 }
 
-type LoanApprover struct{}
+type PackageValidator struct{}
 
-func NewLoanApprover() *LoanApprover {
-	return &LoanApprover{}
+func NewPackageValidator() *PackageValidator {
+	return &PackageValidator{}
 }
 
-func (la *LoanApprover) can_deliver(pkg *Package) DeliveryResult {
+func (pv *PackageValidator) can_deliver(pkg *Package) DeliveryResult {
 	if pkg != nil {
 		if pkg.HasWeight {
 			if pkg.Weight <= 50 {
 				if pkg.Hazardous == false {
 					if pkg.TemperatureRequired != nil {
 						if *pkg.TemperatureRequired >= -20 && *pkg.TemperatureRequired <= 40 {
-							return la.weekend_remote(pkg)
+							return pv.weekend_remote(pkg)
 						} else {
 							return DeliveryResult{false, "Temperature out of range"}
 						}
 					} else {
-						return la.weekend_remote(pkg)
+						return pv.weekend_remote(pkg)
 					}
 				} else {
 					return DeliveryResult{false, "Hazardous material"}
@@ -46,7 +46,7 @@ func (la *LoanApprover) can_deliver(pkg *Package) DeliveryResult {
 		return DeliveryResult{false, "No package"}
 	}
 }
-func (la *LoanApprover) weekend_remote(pkg *Package) DeliveryResult {
+func (pv *PackageValidator) weekend_remote(pkg *Package) DeliveryResult {
 	if pkg.Weekend == false {
 		if pkg.RemoteArea {
 			if pkg.Weight <= 20 {

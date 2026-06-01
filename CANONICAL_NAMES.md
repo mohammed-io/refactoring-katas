@@ -15,7 +15,7 @@
 | 03-copy-paste-payroll | PayrollCalculator | payroll_calculator | generate_payslips | |
 | 04-cryptic-calculator | Calculator | calculator | normalize | |
 | 05-zombie-code | CampaignSender | campaign_sender | send_campaign | |
-| 06-nested-if-hell | LoanApprover | loan_approver | can_deliver | |
+| 06-nested-if-hell | PackageValidator | package_validator | can_deliver | |
 | 07-switch-factory | PlaylistCurator | playlist_curator | create_playlist | |
 | 08-jealous-function | KitchenTicket | kitchen_ticket | print_ticket | |
 | 09-stringly-typed | IssueUpdater | issue_updater | update_issue | |

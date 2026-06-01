@@ -1,4 +1,4 @@
-class LoanApprover:
+class PackageValidator:
     def __init__(self):
         pass
 

@@ -13,7 +13,7 @@ public class DeliveryResult
     public string? Warning;
 }
 
-public class LoanApprover
+public class PackageValidator
 {
     public DeliveryResult can_deliver(Package? pkg)
     {

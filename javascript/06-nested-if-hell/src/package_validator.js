@@ -1,4 +1,4 @@
-class LoanApprover {
+class PackageValidator {
   constructor() {}
 
   can_deliver(pkg) {
@@ -62,4 +62,4 @@ class LoanApprover {
   }
 }
 
-export { LoanApprover };
+export { PackageValidator };
